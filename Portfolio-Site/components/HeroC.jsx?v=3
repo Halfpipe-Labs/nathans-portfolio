@@ -1,0 +1,343 @@
+// HeroC.jsx — Typographic maximalism: staggered oversized letters, marquee, bold editorial
+
+const HeroC = () => {
+  const [mounted, setMounted] = React.useState(false);
+  const [scrollY, setScrollY] = React.useState(0);
+
+  React.useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 60);
+    return () => clearTimeout(t);
+  }, []);
+
+  React.useEffect(() => {
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const letters = ['N', 'A', 'T', 'H', 'A', 'N'];
+  const letters2 = ['P', 'E', 'A', 'R', 'S', 'O', 'N'];
+
+  const pills = [
+  { label: 'Marketer', color: '#FFE234' },
+  { label: 'ADHD Advocate', color: '#FF6B6B' },
+  { label: 'Writer', color: '#5DCAA5' },
+  { label: 'Builder', color: '#85B7EB' }];
+
+
+  return (
+    <section style={heroCStyles.section} data-screen-label="Hero">
+      {/* Marquee ticker */}
+      <div style={heroCStyles.ticker}>
+        <div style={{
+          ...heroCStyles.tickerInner,
+          transform: `translateX(-${scrollY * 0.15 % 400}px)`
+        }}>
+          {Array(4).fill(null).map((_, i) =>
+          <span key={i} style={heroCStyles.tickerItem}>
+              MARKETER · ADHD ADVOCATE · WRITER · BUILDER · NORTH NORFOLK ·&nbsp;
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div style={heroCStyles.inner}>
+        {/* Giant staggered name */}
+        <div style={heroCStyles.nameMega}>
+          {/* NATHAN row */}
+          <div style={heroCStyles.nameRow1}>
+            {letters.map((l, i) =>
+            <span
+              key={i}
+              style={{
+                ...heroCStyles.nameLetter,
+                opacity: mounted ? 1 : 0,
+                transform: mounted ? 'none' : `translateY(${30 + i * 8}px)`,
+                transition: `opacity 500ms ease ${i * 60}ms, transform 600ms ease ${i * 60}ms`
+              }}>
+              
+                {l}
+              </span>
+            )}
+          </div>
+          {/* PEARSON row — offset right, yellow */}
+          <div style={heroCStyles.nameRow2}>
+            {letters2.map((l, i) =>
+            <span
+              key={i}
+              style={{
+                ...heroCStyles.nameLetter2,
+                opacity: mounted ? 1 : 0,
+                transform: mounted ? 'none' : `translateY(${30 + i * 8}px)`,
+                transition: `opacity 500ms ease ${300 + i * 55}ms, transform 600ms ease ${300 + i * 55}ms`
+              }}>
+              
+                {l}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Horizontal rule with metadata */}
+        <div style={{
+          ...heroCStyles.metaBar,
+          opacity: mounted ? 1 : 0,
+          transition: 'opacity 600ms ease 900ms'
+        }}>
+          <div style={heroCStyles.metaBarLine}></div>
+          <div style={heroCStyles.metaItems}>
+            <span style={heroCStyles.metaItem}>North Norfolk, UK</span>
+            <span style={heroCStyles.metaDot}>·</span>
+            <span style={heroCStyles.metaItem}>EST. 1991</span>
+            <span style={heroCStyles.metaDot}>·</span>
+            <span style={heroCStyles.metaItem}>9 ACTIVE PROJECTS</span>
+          </div>
+          <div style={heroCStyles.metaBarLine}></div>
+        </div>
+
+        {/* Bottom content: bio + pills + CTAs */}
+        <div style={{
+          ...heroCStyles.bottom,
+          opacity: mounted ? 1 : 0,
+          transform: mounted ? 'none' : 'translateY(20px)',
+          transition: 'opacity 600ms ease 1000ms, transform 600ms ease 1000ms'
+        }}>
+          <div style={heroCStyles.bottomLeft}>
+            <p style={heroCStyles.tagline}>
+              Digital marketer. ADHD advocate.<br />Writer. Builder. Barely thriving.
+            </p>
+            <div style={heroCStyles.ctaRow}>
+              <a href="#pillars" style={heroCStyles.ctaPrimary}>Explore my work</a>
+              <a href="mailto:nathan@nathanknowsnothing.co.uk" style={heroCStyles.ctaOutline}>Get in touch</a>
+            </div>
+          </div>
+          <div style={heroCStyles.bottomRight}>
+            {pills.map((p) =>
+            <span key={p.label} style={{
+              ...heroCStyles.pill,
+              border: `1px solid ${p.color}`,
+              color: p.color
+            }}>
+                <span style={{ ...heroCStyles.dot, background: p.color }}></span>
+                {p.label}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Portrait — editorial positioned */}
+      <div style={{
+        ...heroCStyles.portraitSlot,
+        opacity: mounted ? 1 : 0,
+        transform: mounted ? 'none' : 'scale(0.97)',
+        transition: 'opacity 800ms ease 400ms, transform 800ms ease 400ms'
+      }}>
+        <img src="assets/portrait.jpg" alt="Nathan Pearson" style={heroCStyles.portrait} />
+        <div style={heroCStyles.portraitOverlay}></div>
+      </div>
+    </section>);
+
+};
+
+const heroCStyles = {
+  section: {
+    background: '#0A0A0A',
+    minHeight: '100vh',
+    position: 'relative',
+    borderBottom: '1px solid #2A2A2A',
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between'
+  },
+  ticker: {
+    borderBottom: '1px solid #1E1E1E',
+    borderTop: '1px solid #1E1E1E',
+    overflow: 'hidden',
+    height: 36,
+    display: 'flex',
+    alignItems: 'center',
+    background: '#111111',
+    flexShrink: 0
+  },
+  tickerInner: {
+    display: 'flex',
+    whiteSpace: 'nowrap',
+    willChange: 'transform'
+  },
+  tickerItem: {
+    fontFamily: "'DM Sans', sans-serif",
+    fontSize: 10,
+    fontWeight: 700,
+    letterSpacing: '0.18em',
+    color: '#4A4742',
+    paddingRight: 0
+  },
+  inner: {
+    padding: '0 64px 64px',
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+    position: 'relative',
+    zIndex: 2
+  },
+  nameMega: {
+    display: 'flex',
+    flexDirection: 'column',
+    lineHeight: 0.82,
+    marginBottom: 32,
+    gap: 0
+  },
+  nameRow1: {
+    display: 'flex',
+    gap: 0
+  },
+  nameRow2: {
+    display: 'flex',
+    gap: 0,
+    marginLeft: 'clamp(28px, 5vw, 80px)'
+  },
+  nameLetter: {
+    fontFamily: "'Bebas Neue', sans-serif",
+    fontSize: 'clamp(80px, 13vw, 172px)',
+    color: '#F5F0E8',
+    letterSpacing: '-0.01em',
+    display: 'inline-block',
+    lineHeight: 0.85
+  },
+  nameLetter2: {
+    fontFamily: "'Bebas Neue', sans-serif",
+    fontSize: 'clamp(80px, 13vw, 172px)',
+    color: '#FFE234',
+    letterSpacing: '-0.01em',
+    display: 'inline-block',
+    lineHeight: 0.85
+  },
+  metaBar: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 20,
+    marginBottom: 32
+  },
+  metaBarLine: {
+    flex: 1,
+    height: 1,
+    background: '#2A2A2A'
+  },
+  metaItems: {
+    display: 'flex',
+    gap: 12,
+    alignItems: 'center',
+    flexShrink: 0
+  },
+  metaItem: {
+    fontFamily: "'DM Sans', sans-serif",
+    fontSize: 11,
+    letterSpacing: '0.14em',
+    textTransform: 'uppercase',
+    color: '#9A9590'
+  },
+  metaDot: {
+    color: '#4A4742',
+    fontSize: 10
+  },
+  bottom: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    gap: 40,
+    flexWrap: 'wrap'
+  },
+  bottomLeft: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 20
+  },
+  tagline: {
+    fontFamily: "'DM Sans', sans-serif",
+    fontSize: 17,
+    color: '#9A9590',
+    lineHeight: 1.65,
+    maxWidth: 360
+  },
+  ctaRow: {
+    display: 'flex',
+    gap: 12,
+    flexWrap: 'wrap'
+  },
+  ctaPrimary: {
+    display: 'inline-block',
+    padding: '13px 32px',
+    background: '#FFE234',
+    color: '#0A0A0A',
+    fontFamily: "'DM Sans', sans-serif",
+    fontSize: 12,
+    fontWeight: 700,
+    letterSpacing: '0.1em',
+    textTransform: 'uppercase',
+    textDecoration: 'none'
+  },
+  ctaOutline: {
+    display: 'inline-block',
+    padding: '13px 32px',
+    background: 'transparent',
+    color: '#F5F0E8',
+    fontFamily: "'DM Sans', sans-serif",
+    fontSize: 12,
+    fontWeight: 600,
+    letterSpacing: '0.1em',
+    textTransform: 'uppercase',
+    textDecoration: 'none',
+    border: '1px solid #404040'
+  },
+  bottomRight: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 8,
+    alignItems: 'flex-end'
+  },
+  pill: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 6,
+    padding: '5px 14px',
+    borderRadius: 999,
+    fontFamily: "'DM Sans', sans-serif",
+    fontSize: 11,
+    fontWeight: 600,
+    letterSpacing: '0.1em',
+    textTransform: 'uppercase'
+  },
+  dot: {
+    width: 5,
+    height: 5,
+    borderRadius: '50%',
+    flexShrink: 0
+  },
+  portraitSlot: {
+    position: 'absolute',
+    top: 36,
+    right: 0,
+    width: '32%',
+    bottom: 0,
+    overflow: 'hidden',
+    zIndex: 1
+  },
+  portrait: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    objectPosition: 'center top',
+    filter: 'grayscale(0.4) contrast(1.05) brightness(0.65)',
+    display: 'block'
+  },
+  portraitOverlay: {
+    position: 'absolute',
+    inset: 0,
+    background: 'linear-gradient(to right, #0A0A0A 0%, rgba(10,10,10,0.3) 40%, transparent 100%)'
+  }
+};
+
+Object.assign(window, { HeroC });

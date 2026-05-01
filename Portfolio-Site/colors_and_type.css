@@ -1,0 +1,280 @@
+/* ============================================================
+   NATHAN PEARSON — Design System Tokens
+   colors_and_type.css
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+
+/* ============================================================
+   COLOR TOKENS
+   ============================================================ */
+
+:root {
+  /* --- Base Backgrounds --- */
+  --color-bg:            #0A0A0A;   /* page background */
+  --color-surface-1:     #111111;   /* card / section surface */
+  --color-surface-2:     #1A1A1A;   /* elevated / hover surface */
+  --color-surface-3:     #242424;   /* tooltip, popover */
+
+  /* --- Borders --- */
+  --color-border:        #2A2A2A;   /* default border */
+  --color-border-subtle: #1E1E1E;   /* very subtle divider */
+  --color-border-strong: #404040;   /* stronger border */
+
+  /* --- Text --- */
+  --color-text-primary:  #F5F0E8;   /* warm white — body, headings */
+  --color-text-secondary:#9A9590;   /* muted warm grey — meta, captions */
+  --color-text-disabled: #4A4742;   /* disabled states */
+  --color-text-inverse:  #0A0A0A;   /* text on accent/light bg */
+
+  /* --- Primary Accent (Marketer / Brand Yellow) --- */
+  --color-accent:        #FFE234;
+  --color-accent-dim:    #BFA918;   /* darker yellow for hover on light */
+
+  /* --- Pillar Accents --- */
+  --color-pillar-marketer: #FFE234;   /* Marketer / Lumos Digital */
+  --color-pillar-adhd:     #FF6B6B;   /* ADHD Advocate / FocusUnlocker */
+  --color-pillar-writer:   #5DCAA5;   /* Writer / Substack */
+  --color-pillar-builder:  #85B7EB;   /* Builder / Half Pipe Labs */
+
+  /* --- Pillar Dim (for hover / pressed) --- */
+  --color-pillar-marketer-dim: #BFA918;
+  --color-pillar-adhd-dim:     #CC4444;
+  --color-pillar-writer-dim:   #3D9A7F;
+  --color-pillar-builder-dim:  #5A8FC2;
+
+  /* --- Semantic Aliases --- */
+  --color-error:   #FF6B6B;   /* reuses ADHD coral — close enough */
+  --color-success: #5DCAA5;   /* reuses Writer teal */
+  --color-info:    #85B7EB;   /* reuses Builder blue */
+}
+
+/* ============================================================
+   TYPOGRAPHY TOKENS
+   ============================================================ */
+
+:root {
+  /* --- Font Families --- */
+  --font-display: 'Bebas Neue', 'Impact', sans-serif;
+  --font-body:    'DM Sans', 'Helvetica Neue', sans-serif;
+
+  /* --- Font Weights --- */
+  --fw-light:    300;
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+
+  /* --- Type Scale (px, desktop) --- */
+  --text-xs:   12px;
+  --text-sm:   14px;
+  --text-base: 16px;
+  --text-md:   18px;
+  --text-lg:   20px;
+  --text-xl:   24px;
+  --text-2xl:  32px;
+  --text-3xl:  48px;
+  --text-4xl:  64px;
+  --text-5xl:  96px;
+  --text-hero: 160px;   /* hero name lockup */
+
+  /* --- Line Heights --- */
+  --lh-tight:  0.95;   /* display / Bebas — compressed */
+  --lh-snug:   1.1;
+  --lh-normal: 1.5;
+  --lh-loose:  1.7;
+
+  /* --- Letter Spacing --- */
+  --ls-tight:   -0.02em;
+  --ls-normal:   0;
+  --ls-wide:     0.05em;
+  --ls-wider:    0.1em;
+  --ls-widest:   0.2em;
+}
+
+/* ============================================================
+   SEMANTIC TYPE STYLES
+   (apply via class or extend in component styles)
+   ============================================================ */
+
+:root {
+  /* --- Display headings (Bebas Neue) --- */
+  --h1-font:    var(--font-display);
+  --h1-size:    var(--text-5xl);
+  --h1-weight:  var(--fw-regular);   /* Bebas only has one weight */
+  --h1-lh:      var(--lh-tight);
+  --h1-ls:      var(--ls-normal);
+  --h1-color:   var(--color-text-primary);
+
+  --h2-font:    var(--font-display);
+  --h2-size:    var(--text-4xl);
+  --h2-weight:  var(--fw-regular);
+  --h2-lh:      var(--lh-tight);
+  --h2-ls:      var(--ls-normal);
+
+  --h3-font:    var(--font-display);
+  --h3-size:    var(--text-3xl);
+  --h3-weight:  var(--fw-regular);
+  --h3-lh:      var(--lh-snug);
+
+  /* --- Body text (DM Sans) --- */
+  --body-font:   var(--font-body);
+  --body-size:   var(--text-base);
+  --body-weight: var(--fw-regular);
+  --body-lh:     var(--lh-normal);
+  --body-color:  var(--color-text-primary);
+
+  --body-lg-size:   var(--text-md);
+  --body-lg-lh:     var(--lh-loose);
+
+  --body-sm-size:   var(--text-sm);
+  --body-sm-color:  var(--color-text-secondary);
+
+  /* --- UI Labels --- */
+  --label-font:    var(--font-body);
+  --label-size:    var(--text-sm);
+  --label-weight:  var(--fw-medium);
+  --label-ls:      var(--ls-wide);
+  --label-color:   var(--color-text-secondary);
+
+  /* --- Pill / Tag --- */
+  --pill-font:     var(--font-body);
+  --pill-size:     var(--text-sm);
+  --pill-weight:   var(--fw-medium);
+  --pill-ls:       var(--ls-wider);
+  --pill-radius:   999px;
+}
+
+/* ============================================================
+   SPACING TOKENS
+   ============================================================ */
+
+:root {
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  24px;
+  --space-6:  32px;
+  --space-7:  48px;
+  --space-8:  64px;
+  --space-9:  80px;
+  --space-10: 120px;
+}
+
+/* ============================================================
+   BORDER TOKENS
+   ============================================================ */
+
+:root {
+  --border-width:  1px;
+  --border-style:  solid;
+  --border-default: 1px solid var(--color-border);
+  --border-subtle:  1px solid var(--color-border-subtle);
+  --border-strong:  1px solid var(--color-border-strong);
+
+  /* --- Pillar borders --- */
+  --border-marketer: 1px solid var(--color-pillar-marketer);
+  --border-adhd:     1px solid var(--color-pillar-adhd);
+  --border-writer:   1px solid var(--color-pillar-writer);
+  --border-builder:  1px solid var(--color-pillar-builder);
+
+  /* --- Corner Radii --- */
+  --radius-none:    0px;
+  --radius-sm:      2px;    /* maximum on cards */
+  --radius-pill:    999px;  /* identity pills only */
+}
+
+/* ============================================================
+   BASE RESET (optional, for design previews)
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--lh-normal);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   UTILITY CLASSES
+   ============================================================ */
+
+.font-display { font-family: var(--font-display); }
+.font-body    { font-family: var(--font-body); }
+
+.text-primary   { color: var(--color-text-primary); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-accent    { color: var(--color-accent); }
+
+.bg-base      { background: var(--color-bg); }
+.bg-surface-1 { background: var(--color-surface-1); }
+.bg-surface-2 { background: var(--color-surface-2); }
+
+.border-default  { border: var(--border-default); }
+.border-marketer { border: var(--border-marketer); }
+.border-adhd     { border: var(--border-adhd); }
+.border-writer   { border: var(--border-writer); }
+.border-builder  { border: var(--border-builder); }
+
+/* --- Identity Pills --- */
+.pill {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  font-family: var(--pill-font);
+  font-size: var(--pill-size);
+  font-weight: var(--pill-weight);
+  letter-spacing: var(--pill-ls);
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--color-text-primary);
+}
+.pill-marketer { border: var(--border-marketer); color: var(--color-pillar-marketer); }
+.pill-adhd     { border: var(--border-adhd);     color: var(--color-pillar-adhd); }
+.pill-writer   { border: var(--border-writer);   color: var(--color-pillar-writer); }
+.pill-builder  { border: var(--border-builder);  color: var(--color-pillar-builder); }
+
+/* --- Buttons --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 12px 24px;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  transition: opacity 150ms ease, background 150ms ease, border-color 150ms ease;
+  text-decoration: none;
+}
+.btn-primary {
+  background: var(--color-accent);
+  color: var(--color-text-inverse);
+  border: 1px solid var(--color-accent);
+}
+.btn-primary:hover { opacity: 0.85; }
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-strong);
+}
+.btn-outline:hover {
+  border-color: var(--color-text-primary);
+  background: var(--color-surface-2);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid transparent;
+}
+.btn-ghost:hover { color: var(--color-text-primary); }
