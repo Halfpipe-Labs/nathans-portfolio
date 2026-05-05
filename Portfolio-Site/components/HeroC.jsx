@@ -3,6 +3,7 @@
 const HeroC = () => {
   const [mounted, setMounted] = React.useState(false);
   const [scrollY, setScrollY] = React.useState(0);
+  const isMobile = useIsMobile();
 
   React.useEffect(() => {
     const t = setTimeout(() => setMounted(true), 60);
@@ -17,6 +18,8 @@ const HeroC = () => {
 
   const letters = ['N','A','T','H','A','N'];
   const letters2 = ['P','E','A','R','S','O','N'];
+
+  const nameFontSize = isMobile ? 'clamp(52px, 13vw, 172px)' : 'clamp(80px, 13vw, 172px)';
 
   return (
     <section style={heroCStyles.section} data-screen-label="Hero">
@@ -34,7 +37,10 @@ const HeroC = () => {
         </div>
       </div>
 
-      <div style={heroCStyles.inner}>
+      <div style={{
+        ...heroCStyles.inner,
+        padding: isMobile ? '0 20px 48px' : '0 64px 64px',
+      }}>
         {/* Giant staggered name */}
         <div style={heroCStyles.nameMega}>
           {/* NATHAN row */}
@@ -44,6 +50,7 @@ const HeroC = () => {
                 key={i}
                 style={{
                   ...heroCStyles.nameLetter,
+                  fontSize: nameFontSize,
                   opacity: mounted ? 1 : 0,
                   transform: mounted ? 'none' : `translateY(${30 + i * 8}px)`,
                   transition: `opacity 500ms ease ${i * 60}ms, transform 600ms ease ${i * 60}ms`,
@@ -60,6 +67,7 @@ const HeroC = () => {
                 key={i}
                 style={{
                   ...heroCStyles.nameLetter2,
+                  fontSize: nameFontSize,
                   opacity: mounted ? 1 : 0,
                   transform: mounted ? 'none' : `translateY(${30 + i * 8}px)`,
                   transition: `opacity 500ms ease ${300 + i * 55}ms, transform 600ms ease ${300 + i * 55}ms`,
@@ -91,11 +99,17 @@ const HeroC = () => {
         }}>
           <div style={heroCStyles.metaBarLine}></div>
           <div style={heroCStyles.metaItems}>
-            <span style={heroCStyles.metaItem}>North Norfolk, UK</span>
-            <span style={heroCStyles.metaDot}>·</span>
-            <span style={heroCStyles.metaItem}>Est. 1991</span>
-            <span style={heroCStyles.metaDot}>·</span>
-            <span style={heroCStyles.metaItem}>9 active projects</span>
+            {isMobile ? (
+              <span style={heroCStyles.metaItem}>North Norfolk · Est. 1991</span>
+            ) : (
+              <>
+                <span style={heroCStyles.metaItem}>North Norfolk, UK</span>
+                <span style={heroCStyles.metaDot}>·</span>
+                <span style={heroCStyles.metaItem}>Est. 1991</span>
+                <span style={heroCStyles.metaDot}>·</span>
+                <span style={heroCStyles.metaItem}>9 active projects</span>
+              </>
+            )}
           </div>
           <div style={heroCStyles.metaBarLine}></div>
         </div>
@@ -103,6 +117,9 @@ const HeroC = () => {
         {/* Bottom content: bio + pills + CTAs */}
         <div style={{
           ...heroCStyles.bottom,
+          flexDirection: isMobile ? 'column' : 'row',
+          alignItems: isMobile ? 'flex-start' : 'flex-end',
+          gap: isMobile ? 32 : 40,
           opacity: mounted ? 1 : 0,
           transform: mounted ? 'none' : 'translateY(20px)',
           transition: 'opacity 600ms ease 1000ms, transform 600ms ease 1000ms',
@@ -113,10 +130,13 @@ const HeroC = () => {
             </p>
             <div style={heroCStyles.ctaRow}>
               <a href="#pillars" style={heroCStyles.ctaPrimary}>Explore my work</a>
-              <a href="mailto:nathan@nathanknowsnothing.co.uk" style={heroCStyles.ctaOutline}>Get in touch</a>
+              <a href="mailto:nathan@nathanknowsnothing.co.uk" className="cta-outline" style={heroCStyles.ctaOutline}>Get in touch</a>
             </div>
           </div>
-          <div style={heroCStyles.bottomRight}>
+          <div style={{
+            ...heroCStyles.bottomRight,
+            alignItems: isMobile ? 'flex-start' : 'flex-end',
+          }}>
             {/* Marketer — bracketed box */}
             <div style={{
               position: 'relative',
@@ -150,7 +170,7 @@ const HeroC = () => {
             </div>
 
             {/* Writer — underline with sub-label */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: isMobile ? 'flex-start' : 'flex-end', gap: 2 }}>
               <span style={{
                 fontFamily: "'DM Sans', sans-serif",
                 fontSize: 10,
@@ -189,16 +209,18 @@ const HeroC = () => {
         </div>
       </div>
 
-      {/* Portrait — editorial positioned */}
-      <div style={{
-        ...heroCStyles.portraitSlot,
-        opacity: mounted ? 1 : 0,
-        transform: mounted ? 'none' : 'scale(0.97)',
-        transition: 'opacity 800ms ease 400ms, transform 800ms ease 400ms',
-      }}>
-        <img src="assets/portrait.jpg" alt="Nathan Pearson" style={heroCStyles.portrait} />
-        <div style={heroCStyles.portraitOverlay}></div>
-      </div>
+      {/* Portrait — editorial positioned — desktop only */}
+      {!isMobile && (
+        <div style={{
+          ...heroCStyles.portraitSlot,
+          opacity: mounted ? 1 : 0,
+          transform: mounted ? 'none' : 'scale(0.97)',
+          transition: 'opacity 800ms ease 400ms, transform 800ms ease 400ms',
+        }}>
+          <img src="assets/portrait.jpg" alt="Nathan Pearson" style={heroCStyles.portrait} />
+          <div style={heroCStyles.portraitOverlay}></div>
+        </div>
+      )}
     </section>
   );
 };
@@ -238,7 +260,6 @@ const heroCStyles = {
     paddingRight: 0,
   },
   inner: {
-    padding: '0 64px 64px',
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
@@ -264,7 +285,6 @@ const heroCStyles = {
   },
   nameLetter: {
     fontFamily: "'Bebas Neue', sans-serif",
-    fontSize: 'clamp(80px, 13vw, 172px)',
     color: '#F5F0E8',
     letterSpacing: '-0.01em',
     display: 'inline-block',
@@ -272,7 +292,6 @@ const heroCStyles = {
   },
   nameLetter2: {
     fontFamily: "'Bebas Neue', sans-serif",
-    fontSize: 'clamp(80px, 13vw, 172px)',
     color: '#FFE234',
     letterSpacing: '-0.01em',
     display: 'inline-block',
@@ -309,8 +328,6 @@ const heroCStyles = {
   bottom: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    gap: 40,
     flexWrap: 'wrap',
   },
   bottomLeft: {
@@ -359,25 +376,6 @@ const heroCStyles = {
     display: 'flex',
     flexDirection: 'column',
     gap: 12,
-    alignItems: 'flex-end',
-  },
-  pill: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 6,
-    padding: '5px 14px',
-    borderRadius: 999,
-    fontFamily: "'DM Sans', sans-serif",
-    fontSize: 11,
-    fontWeight: 600,
-    letterSpacing: '0.1em',
-    textTransform: 'uppercase',
-  },
-  dot: {
-    width: 5,
-    height: 5,
-    borderRadius: '50%',
-    flexShrink: 0,
   },
   portraitSlot: {
     position: 'absolute',

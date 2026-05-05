@@ -125,29 +125,55 @@ const PillarCard = ({ pillar }) => {
   );
 };
 
-const Pillars = () => (
-  <section style={pillarsStyles.section} id="pillars" data-screen-label="Pillars">
-    <div style={pillarsStyles.inner}>
-      <div style={pillarsStyles.sectionHeader}>
-        <div style={pillarsStyles.eyebrow}>What I do</div>
-        <h2 style={pillarsStyles.sectionTitle}>MANY THINGS.<br />ALL REAL.</h2>
-        <p style={pillarsStyles.sectionDesc}>
-          I don't have a niche. I have many. Here's where my time goes.
-        </p>
-      </div>
-      <div style={pillarsStyles.gridTop}>
-          {pillarsData.slice(0,2).map(p => (
+const Pillars = () => {
+  const isMobile = useIsMobile();
+
+  return (
+    <section style={pillarsStyles.section} id="pillars" data-screen-label="Pillars">
+      <div style={{
+        ...pillarsStyles.inner,
+        padding: isMobile ? '0 20px' : '0 64px',
+      }}>
+        <div style={{
+          ...pillarsStyles.sectionHeader,
+          gridTemplateColumns: isMobile ? '1fr' : 'auto 1fr auto',
+          marginBottom: isMobile ? 40 : 56,
+        }}>
+          <div style={pillarsStyles.eyebrow}>What I do</div>
+          <h2 style={{
+            ...pillarsStyles.sectionTitle,
+            gridColumn: isMobile ? '1' : '1 / 2',
+            gridRow: isMobile ? 'auto' : '2',
+          }}>MANY THINGS.<br />ALL REAL.</h2>
+          <p style={{
+            ...pillarsStyles.sectionDesc,
+            gridColumn: isMobile ? '1' : '3 / 4',
+            gridRow: isMobile ? 'auto' : '2',
+            maxWidth: isMobile ? '100%' : 320,
+          }}>
+            I don't have a niche. I have many. Here's where my time goes.
+          </p>
+        </div>
+        <div style={{
+          ...pillarsStyles.gridTop,
+          gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+        }}>
+          {pillarsData.slice(0, 2).map(p => (
             <PillarCard key={p.id} pillar={p} />
           ))}
         </div>
-        <div style={pillarsStyles.gridBottom}>
+        <div style={{
+          ...pillarsStyles.gridBottom,
+          gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr',
+        }}>
           {pillarsData.slice(2).map(p => (
             <PillarCard key={p.id} pillar={p} />
           ))}
         </div>
       </div>
-  </section>
-);
+    </section>
+  );
+};
 
 const pillarsStyles = {
   section: {
@@ -156,14 +182,11 @@ const pillarsStyles = {
     padding: '96px 0',
   },
   inner: {
-    padding: '0 64px',
     maxWidth: 1200,
     margin: '0 auto',
   },
   sectionHeader: {
-    marginBottom: 56,
     display: 'grid',
-    gridTemplateColumns: 'auto 1fr auto',
     alignItems: 'end',
     gap: 32,
   },
@@ -182,35 +205,22 @@ const pillarsStyles = {
     fontSize: 72,
     lineHeight: 0.92,
     color: '#F5F0E8',
-    gridColumn: '1 / 2',
-    gridRow: '2',
   },
   sectionDesc: {
     fontFamily: "'DM Sans', sans-serif",
     fontSize: 15,
     color: '#9A9590',
     lineHeight: 1.6,
-    maxWidth: 320,
-    gridColumn: '3 / 4',
-    gridRow: '2',
     alignSelf: 'end',
-  },
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(4, 1fr)',
-    gap: 1,
-    background: '#2A2A2A',
   },
   gridTop: {
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
     gap: 1,
     background: '#2A2A2A',
     marginBottom: 1,
   },
   gridBottom: {
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr 1fr',
     gap: 1,
     background: '#2A2A2A',
   },

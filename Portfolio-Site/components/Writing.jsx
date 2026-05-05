@@ -24,8 +24,43 @@ const writingPosts = [
   },
 ];
 
-const PostRow = ({ post, isLast }) => {
+const PostRow = ({ post, isLast, isMobile }) => {
   const [hovered, setHovered] = React.useState(false);
+
+  if (isMobile) {
+    return (
+      <a
+        href={post.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          ...writingStyles.postRowMobile,
+          borderBottom: isLast ? 'none' : '1px solid #1E1E1E',
+          background: hovered ? '#0F0F0F' : 'transparent',
+          textDecoration: 'none',
+        }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={writingStyles.date}>{post.date}</span>
+          <span style={{
+            ...writingStyles.arrow,
+            color: hovered ? '#5DCAA5' : '#4A4742',
+            transform: hovered ? 'translate(2px, -2px)' : 'none',
+            transition: 'color 150ms ease, transform 150ms ease',
+          }}>↗</span>
+        </div>
+        <div style={{
+          ...writingStyles.postTitle,
+          color: hovered ? '#5DCAA5' : '#F5F0E8',
+          transition: 'color 150ms ease',
+        }}>{post.title}</div>
+        <div style={writingStyles.postExcerpt}>{post.excerpt}</div>
+      </a>
+    );
+  }
+
   return (
     <a
       href={post.url}
@@ -62,34 +97,63 @@ const PostRow = ({ post, isLast }) => {
   );
 };
 
-const Writing = () => (
-  <section style={writingStyles.section} id="writing" data-screen-label="Writing">
-    <div style={writingStyles.inner}>
-      <div style={writingStyles.header}>
-        <div>
-          <div style={writingStyles.eyebrow}>Writing</div>
-          <h2 style={writingStyles.heading}>
-            NATHAN<br />
-            <span style={{ color: '#5DCAA5' }}>KNOWS NOTHING</span>
-          </h2>
+const Writing = () => {
+  const isMobile = useIsMobile();
+
+  return (
+    <section style={writingStyles.section} id="writing" data-screen-label="Writing">
+      <div style={{
+        ...writingStyles.inner,
+        padding: isMobile ? '0 20px' : '0 64px',
+      }}>
+        <div style={{
+          ...writingStyles.header,
+          flexDirection: isMobile ? 'column' : 'row',
+          alignItems: isMobile ? 'flex-start' : 'flex-end',
+          gap: isMobile ? 20 : 0,
+        }}>
+          <div>
+            <div style={writingStyles.eyebrow}>Writing</div>
+            <h2 style={writingStyles.heading}>
+              NATHAN<br />
+              <span style={{ color: '#5DCAA5' }}>KNOWS NOTHING</span>
+            </h2>
+          </div>
+          <a
+            href="https://nathanknowsnothing.substack.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="subscribe-btn"
+            style={writingStyles.subscribeBtn}
+          >
+            Subscribe on Substack ↗
+          </a>
         </div>
-        <a href="https://nathanknowsnothing.substack.com" target="_blank" rel="noopener noreferrer" style={writingStyles.subscribeBtn}>
-          Subscribe on Substack ↗
-        </a>
+        <div style={writingStyles.postList}>
+          {writingPosts.map((post, i) => (
+            <PostRow
+              key={post.title}
+              post={post}
+              isLast={i === writingPosts.length - 1}
+              isMobile={isMobile}
+            />
+          ))}
+        </div>
+        <div style={writingStyles.footer}>
+          <a
+            href="https://nathanknowsnothing.substack.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="all-posts"
+            style={writingStyles.allPostsLink}
+          >
+            All posts →
+          </a>
+        </div>
       </div>
-      <div style={writingStyles.postList}>
-        {writingPosts.map((post, i) => (
-          <PostRow key={post.title} post={post} isLast={i === writingPosts.length - 1} />
-        ))}
-      </div>
-      <div style={writingStyles.footer}>
-        <a href="https://nathanknowsnothing.substack.com" target="_blank" rel="noopener noreferrer" style={writingStyles.allPostsLink}>
-          All posts →
-        </a>
-      </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 const writingStyles = {
   section: {
@@ -98,14 +162,12 @@ const writingStyles = {
     padding: '96px 0',
   },
   inner: {
-    padding: '0 64px',
     maxWidth: 1200,
     margin: '0 auto',
   },
   header: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'flex-end',
     marginBottom: 40,
   },
   eyebrow: {
@@ -136,6 +198,7 @@ const writingStyles = {
     textDecoration: 'none',
     transition: 'background 150ms ease, color 150ms ease',
     flexShrink: 0,
+    alignSelf: 'flex-start',
   },
   postList: {
     borderTop: '1px solid #2A2A2A',
@@ -146,6 +209,13 @@ const writingStyles = {
     gap: 24,
     padding: '28px 0',
     alignItems: 'start',
+    transition: 'background 150ms ease',
+  },
+  postRowMobile: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 8,
+    padding: '20px 0',
     transition: 'background 150ms ease',
   },
   postMeta: {

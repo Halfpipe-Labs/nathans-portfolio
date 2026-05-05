@@ -13,8 +13,50 @@ const linksData = [
   { label: 'Instagram', desc: '@nathandoesmarketing', url: 'https://www.instagram.com/nathandoesmarketing/', color: '#9A9590', pillar: 'Socials' },
 ];
 
-const LinkRow = ({ item, isLast }) => {
+const LinkRow = ({ item, isLast, isMobile }) => {
   const [hovered, setHovered] = React.useState(false);
+
+  if (isMobile) {
+    return (
+      <a
+        href={item.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          ...linksStyles.rowMobile,
+          borderBottom: isLast ? 'none' : '1px solid #1E1E1E',
+          background: hovered ? '#0D0D0D' : 'transparent',
+          textDecoration: 'none',
+        }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{
+            ...linksStyles.pill,
+            border: `1px solid ${item.color === '#9A9590' ? '#2A2A2A' : item.color}`,
+            color: item.color,
+          }}>
+            {item.pillar}
+          </span>
+          <span style={{
+            ...linksStyles.arrow,
+            color: hovered ? item.color : '#4A4742',
+            transform: hovered ? 'translate(2px, -2px)' : 'none',
+            transition: 'color 150ms ease, transform 150ms ease',
+          }}>↗</span>
+        </div>
+        <span style={{
+          ...linksStyles.label,
+          color: hovered ? item.color : '#F5F0E8',
+          transition: 'color 150ms ease',
+        }}>
+          {item.label}
+        </span>
+      </a>
+    );
+  }
+
   return (
     <a
       href={item.url}
@@ -54,19 +96,31 @@ const LinkRow = ({ item, isLast }) => {
   );
 };
 
-const Links = () => (
-  <section style={linksStyles.section} id="links" data-screen-label="Links">
-    <div style={linksStyles.inner}>
-      <div style={linksStyles.eyebrow}>Everywhere I am</div>
-      <h2 style={linksStyles.heading}>ALL THE LINKS</h2>
-      <div style={linksStyles.list}>
-        {linksData.map((item, i) => (
-          <LinkRow key={item.label} item={item} isLast={i === linksData.length - 1} />
-        ))}
+const Links = () => {
+  const isMobile = useIsMobile();
+
+  return (
+    <section style={linksStyles.section} id="links" data-screen-label="Links">
+      <div style={{
+        ...linksStyles.inner,
+        padding: isMobile ? '0 20px' : '0 64px',
+      }}>
+        <div style={linksStyles.eyebrow}>Everywhere I am</div>
+        <h2 style={linksStyles.heading}>ALL THE LINKS</h2>
+        <div style={linksStyles.list}>
+          {linksData.map((item, i) => (
+            <LinkRow
+              key={item.label}
+              item={item}
+              isLast={i === linksData.length - 1}
+              isMobile={isMobile}
+            />
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 const linksStyles = {
   section: {
@@ -75,7 +129,6 @@ const linksStyles = {
     padding: '96px 0',
   },
   inner: {
-    padding: '0 64px',
     maxWidth: 960,
     margin: '0 auto',
   },
@@ -104,6 +157,13 @@ const linksStyles = {
     gap: 24,
     padding: '20px 0',
     alignItems: 'center',
+    transition: 'background 150ms ease',
+  },
+  rowMobile: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 8,
+    padding: '16px 0',
     transition: 'background 150ms ease',
   },
   pill: {

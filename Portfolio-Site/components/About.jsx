@@ -1,6 +1,8 @@
 // About.jsx — About section with portrait + bio
 
 const About = () => {
+  const isMobile = useIsMobile();
+
   const stats = [
     { val: '10+', label: 'Years in digital marketing' },
     { val: '9', label: 'Active projects' },
@@ -9,11 +11,25 @@ const About = () => {
 
   return (
     <section style={aboutStyles.section} id="about" data-screen-label="About">
-      <div style={aboutStyles.inner}>
-        <div style={aboutStyles.grid}>
+      <div style={{
+        ...aboutStyles.inner,
+        padding: isMobile ? '0 20px' : '0 64px',
+      }}>
+        <div style={{
+          ...aboutStyles.grid,
+          gridTemplateColumns: isMobile ? '1fr' : '360px 1fr',
+          gap: isMobile ? 40 : 96,
+        }}>
           {/* Portrait */}
-          <div style={aboutStyles.portraitCol}>
-            <div style={aboutStyles.portraitFrame}>
+          <div style={{
+            ...aboutStyles.portraitCol,
+            position: isMobile ? 'static' : 'sticky',
+          }}>
+            <div style={{
+              ...aboutStyles.portraitFrame,
+              aspectRatio: isMobile ? '4/3' : '3/4',
+              maxHeight: isMobile ? 280 : 'none',
+            }}>
               <img
                 src="assets/portrait2.jpg"
                 alt="Nathan Pearson"
@@ -46,7 +62,11 @@ const About = () => {
               </p>
             </div>
 
-            <div style={aboutStyles.statRow}>
+            <div style={{
+              ...aboutStyles.statRow,
+              gap: isMobile ? 24 : 40,
+              flexWrap: isMobile ? 'wrap' : 'nowrap',
+            }}>
               {stats.map(s => (
                 <div key={s.label} style={aboutStyles.stat}>
                   <div style={aboutStyles.statVal}>{s.val}</div>
@@ -55,7 +75,11 @@ const About = () => {
               ))}
             </div>
 
-            <div style={aboutStyles.contactRow}>
+            <div style={{
+              ...aboutStyles.contactRow,
+              flexWrap: 'wrap',
+              gap: isMobile ? 16 : 24,
+            }}>
               <a href="mailto:nathan@nathanknowsnothing.co.uk" style={aboutStyles.contactBtn}>
                 Get in touch ↗
               </a>
@@ -64,7 +88,7 @@ const About = () => {
                   { label: 'LinkedIn', url: 'https://www.linkedin.com/in/nathan-pearson/' },
                   { label: 'Instagram', url: 'https://www.instagram.com/nathandoesmarketing/' },
                 ].map(s => (
-                  <a key={s.label} href={s.url} target="_blank" rel="noopener noreferrer" style={aboutStyles.socialLink}>
+                  <a key={s.label} href={s.url} target="_blank" rel="noopener noreferrer" className="social-link" style={aboutStyles.socialLink}>
                     {s.label} ↗
                   </a>
                 ))}
@@ -84,27 +108,22 @@ const aboutStyles = {
     padding: '96px 0',
   },
   inner: {
-    padding: '0 64px',
     maxWidth: 1200,
     margin: '0 auto',
   },
   grid: {
     display: 'grid',
-    gridTemplateColumns: '360px 1fr',
-    gap: 96,
     alignItems: 'start',
   },
   portraitCol: {
     display: 'flex',
     flexDirection: 'column',
     gap: 12,
-    position: 'sticky',
     top: 80,
   },
   portraitFrame: {
     border: '1px solid #2A2A2A',
     overflow: 'hidden',
-    aspectRatio: '3/4',
   },
   portrait: {
     width: '100%',
@@ -148,7 +167,6 @@ const aboutStyles = {
   },
   statRow: {
     display: 'flex',
-    gap: 40,
     paddingTop: 28,
     borderTop: '1px solid #2A2A2A',
   },
@@ -173,7 +191,6 @@ const aboutStyles = {
   contactRow: {
     display: 'flex',
     alignItems: 'center',
-    gap: 24,
     paddingTop: 4,
   },
   contactBtn: {

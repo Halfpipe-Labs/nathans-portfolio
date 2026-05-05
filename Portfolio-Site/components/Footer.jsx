@@ -1,83 +1,109 @@
 // Footer.jsx — Site footer
 
-const Footer = () => (
-  <footer style={footerStyles.footer} data-screen-label="Footer">
-    <div style={footerStyles.inner}>
-      <div style={footerStyles.top}>
-        <div style={footerStyles.nameLockup}>
-          <span style={footerStyles.nathan}>NATHAN</span>
-          <span style={footerStyles.pearson}>PEARSON</span>
-          <span style={footerStyles.postnominals}>MCIM · MRI</span>
+const Footer = () => {
+  const isMobile = useIsMobile();
+
+  return (
+    <footer style={footerStyles.footer} data-screen-label="Footer">
+      <div style={{
+        ...footerStyles.inner,
+        padding: isMobile ? '0 20px' : '0 64px',
+      }}>
+        <div style={{
+          ...footerStyles.top,
+          flexDirection: isMobile ? 'column' : 'row',
+          alignItems: isMobile ? 'flex-start' : 'flex-end',
+          gap: isMobile ? 16 : 0,
+        }}>
+          <div style={footerStyles.nameLockup}>
+            <span style={footerStyles.nathan}>NATHAN</span>
+            <span style={footerStyles.pearson}>PEARSON</span>
+            <span style={footerStyles.postnominals}>MCIM · MRI</span>
+          </div>
+          <div style={{
+            ...footerStyles.tagline,
+            textAlign: isMobile ? 'left' : 'right',
+          }}>
+            Marketer. Builder. Writer. Advocate.<br />North Norfolk's finest export.
+          </div>
         </div>
-        <div style={footerStyles.tagline}>
-          Marketer. Builder. Writer. Advocate.<br />North Norfolk's finest export.
+
+        <div style={footerStyles.divider}></div>
+
+        <div style={{
+          ...footerStyles.mid,
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+          gap: isMobile ? 28 : 32,
+        }}>
+          <div style={footerStyles.linkGroup}>
+            <div style={footerStyles.linkGroupLabel}>Projects</div>
+            {[
+              { label: 'Lumos Digital', url: 'https://lumosdigital.co.uk', color: '#FFE234' },
+              { label: 'PocketSERP', url: 'https://pocketserp.com', color: '#FFE234' },
+              { label: 'FocusUnlocker', url: 'https://focusunlocker.co.uk', color: '#85B7EB' },
+              { label: 'ADHD UK Ambassador', url: 'https://adhduk.co.uk/2026/03/24/nathan-pearson/', color: '#FF6B6B' },
+              { label: 'KL&WN Pride', url: 'https://klwnpride.org', color: '#C084FC' },
+              { label: 'Half Pipe Labs', url: 'https://halfpipelabs.co.uk', color: '#85B7EB' },
+              { label: 'Barely Thriving Plant Care', url: 'https://barelythriving.halfpipelabs.co.uk', color: '#85B7EB' },
+            ].map(link => (
+              <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer"
+                className="footer-link"
+                style={{ ...footerStyles.footerLink, color: link.color }}>
+                {link.label}
+              </a>
+            ))}
+          </div>
+          <div style={footerStyles.linkGroup}>
+            <div style={footerStyles.linkGroupLabel}>Writing</div>
+            {[
+              { label: 'Nathan Knows Nothing', url: 'https://nathanknowsnothing.substack.com', color: '#5DCAA5' },
+            ].map(link => (
+              <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer"
+                className="footer-link"
+                style={{ ...footerStyles.footerLink, color: link.color }}>
+                {link.label}
+              </a>
+            ))}
+          </div>
+          <div style={footerStyles.linkGroup}>
+            <div style={footerStyles.linkGroupLabel}>Socials</div>
+            {[
+              { label: 'LinkedIn', url: 'https://www.linkedin.com/in/nathan-pearson/', color: '#9A9590' },
+              { label: 'Instagram', url: 'https://www.instagram.com/nathandoesmarketing/', color: '#9A9590' },
+            ].map(link => (
+              <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer"
+                className="footer-link"
+                style={{ ...footerStyles.footerLink, color: link.color }}>
+                {link.label}
+              </a>
+            ))}
+          </div>
+          <div style={footerStyles.contactBlock}>
+            <div style={footerStyles.linkGroupLabel}>Get in touch</div>
+            <a href="mailto:nathan@nathanknowsnothing.co.uk" style={footerStyles.emailLink}>
+              nathan@nathanknowsnothing.co.uk
+            </a>
+          </div>
+        </div>
+
+        <div style={footerStyles.divider}></div>
+
+        <div style={{
+          ...footerStyles.bottom,
+          flexDirection: isMobile ? 'column' : 'row',
+          gap: isMobile ? 8 : 0,
+        }}>
+          <div style={footerStyles.copyright}>
+            © {new Date().getFullYear()} Nathan Pearson. North Norfolk, UK.
+          </div>
+          <div style={footerStyles.builtWith}>
+            Made with caffeine and ADHD.
+          </div>
         </div>
       </div>
-
-      <div style={footerStyles.divider}></div>
-
-      <div style={footerStyles.mid}>
-        <div style={footerStyles.linkGroup}>
-          <div style={footerStyles.linkGroupLabel}>Projects</div>
-          {[
-            { label: 'Lumos Digital', url: 'https://lumosdigital.co.uk', color: '#FFE234' },
-            { label: 'PocketSERP', url: 'https://pocketserp.com', color: '#FFE234' },
-            { label: 'FocusUnlocker', url: 'https://focusunlocker.co.uk', color: '#85B7EB' },
-            { label: 'ADHD UK Ambassador', url: 'https://adhduk.co.uk/2026/03/24/nathan-pearson/', color: '#FF6B6B' },
-            { label: 'KL&WN Pride', url: 'https://klwnpride.org', color: '#C084FC' },
-            { label: 'Half Pipe Labs', url: 'https://halfpipelabs.co.uk', color: '#85B7EB' },
-            { label: 'Barely Thriving Plant Care', url: 'https://barelythriving.halfpipelabs.co.uk', color: '#85B7EB' },
-          ].map(link => (
-            <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer"
-              style={{ ...footerStyles.footerLink, color: link.color }}>
-              {link.label}
-            </a>
-          ))}
-        </div>
-        <div style={footerStyles.linkGroup}>
-          <div style={footerStyles.linkGroupLabel}>Writing</div>
-          {[
-            { label: 'Nathan Knows Nothing', url: 'https://nathanknowsnothing.substack.com', color: '#5DCAA5' },
-          ].map(link => (
-            <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer"
-              style={{ ...footerStyles.footerLink, color: link.color }}>
-              {link.label}
-            </a>
-          ))}
-        </div>
-        <div style={footerStyles.linkGroup}>
-          <div style={footerStyles.linkGroupLabel}>Socials</div>
-          {[
-            { label: 'LinkedIn', url: 'https://www.linkedin.com/in/nathan-pearson/', color: '#9A9590' },
-            { label: 'Instagram', url: 'https://www.instagram.com/nathandoesmarketing/', color: '#9A9590' },
-          ].map(link => (
-            <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer"
-              style={{ ...footerStyles.footerLink, color: link.color }}>
-              {link.label}
-            </a>
-          ))}
-        </div>
-        <div style={footerStyles.contactBlock}>
-          <div style={footerStyles.linkGroupLabel}>Get in touch</div>
-          <a href="mailto:nathan@nathanknowsnothing.co.uk" style={footerStyles.emailLink}>
-            nathan@nathanknowsnothing.co.uk
-          </a>
-        </div>
-      </div>
-
-      <div style={footerStyles.divider}></div>
-
-      <div style={footerStyles.bottom}>
-        <div style={footerStyles.copyright}>
-          © {new Date().getFullYear()} Nathan Pearson. North Norfolk, UK.
-        </div>
-        <div style={footerStyles.builtWith}>
-          Made with caffeine and ADHD.
-        </div>
-      </div>
-    </div>
-  </footer>
-);
+    </footer>
+  );
+};
 
 const footerStyles = {
   footer: {
@@ -86,14 +112,12 @@ const footerStyles = {
     borderTop: '1px solid #1E1E1E',
   },
   inner: {
-    padding: '0 64px',
     maxWidth: 1200,
     margin: '0 auto',
   },
   top: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'flex-end',
     marginBottom: 48,
   },
   nameLockup: {
@@ -130,7 +154,6 @@ const footerStyles = {
     fontSize: 14,
     color: '#4A4742',
     lineHeight: 1.65,
-    textAlign: 'right',
   },
   divider: {
     height: 1,
@@ -139,8 +162,6 @@ const footerStyles = {
   },
   mid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(4, 1fr)',
-    gap: 32,
     marginBottom: 40,
   },
   linkGroup: {
