@@ -69,7 +69,11 @@ const About = () => {
             }}>
               {stats.map(s => (
                 <div key={s.label} style={aboutStyles.stat}>
-                  <div style={aboutStyles.statVal}>{s.val}</div>
+                  <div style={{
+                    ...aboutStyles.statVal,
+                    fontFamily: s.val === '∞' ? "'DM Sans', sans-serif" : "'Bebas Neue', sans-serif",
+                    fontWeight: s.val === '∞' ? 300 : undefined,
+                  }}>{s.val}</div>
                   <div style={aboutStyles.statLabel}>{s.label}</div>
                 </div>
               ))}
