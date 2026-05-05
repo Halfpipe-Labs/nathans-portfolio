@@ -38,6 +38,140 @@
   .footer-link:hover { opacity: 1 !important; }
   .subscribe-btn:hover { background: rgba(93,202,165,0.1) !important; }
   .all-posts:hover { color: #F5F0E8 !important; }
+
+  /* =========================================================
+     MOBILE — overrides React inline styles via !important.
+     These rules are the source of truth for layout ≤768px.
+     The JS isMobile checks in components do the same thing;
+     these CSS rules act as a guaranteed fallback if component
+     files are cached and serve stale code.
+     ========================================================= */
+  @media (max-width: 768px) {
+
+    /* Prevent any element causing horizontal scroll */
+    html { overflow-x: hidden; }
+
+    /* --- NAV --- */
+    nav { padding-left: 20px !important; padding-right: 20px !important; }
+    nav ul { display: none !important; }
+
+    /* --- SECTION INNER PADDING (all sections have an id; direct child div is the inner wrapper) --- */
+    #pillars > div,
+    #about   > div,
+    #writing > div,
+    #links   > div,
+    footer   > div {
+      padding-left: 20px !important;
+      padding-right: 20px !important;
+    }
+    /* Hero inner is the 2nd child of its section (1st is the ticker bar) */
+    #hero section > div:nth-child(2) {
+      padding-left: 20px !important;
+      padding-right: 20px !important;
+      padding-bottom: 48px !important;
+    }
+
+    /* --- HERO: hide portrait, shrink name, stack bottom row --- */
+    /* Portrait slot is the 3rd child of the section */
+    #hero section > div:nth-child(3) { display: none !important; }
+    /* Name letter spans have font-size: clamp(80px, …) — shrink the minimum */
+    #hero section span[style*="clamp(80px"] {
+      font-size: clamp(52px, 13vw, 172px) !important;
+    }
+    /* Bottom content row (last child of inner div): stack vertically */
+    #hero section > div:nth-child(2) > div:last-child {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 32px !important;
+    }
+    /* Identity badges (bottomRight): align left on mobile */
+    #hero section > div:nth-child(2) > div:last-child > div:last-child {
+      align-items: flex-start !important;
+    }
+
+    /* --- ABOUT: single-column layout --- */
+    /* Grid has gridTemplateColumns: "360px 1fr" — collapse to 1fr */
+    #about [style*="360px"] {
+      grid-template-columns: 1fr !important;
+      gap: 40px !important;
+    }
+    #about [style*="sticky"] { position: static !important; }
+    /* Portrait frame aspect ratio */
+    #about [style*="3/4"] {
+      aspect-ratio: 4/3 !important;
+      max-height: 280px !important;
+    }
+
+    /* --- PILLARS: single-column grids --- */
+    /* Matches both "1fr 1fr" (top) and "1fr 1fr 1fr" (bottom) */
+    #pillars [style*="1fr 1fr"] { grid-template-columns: 1fr !important; }
+    /* Section header side-by-side → stacked */
+    #pillars [style*="auto 1fr auto"] { grid-template-columns: 1fr !important; }
+
+    /* --- WRITING: stack header; convert post rows from grid to flex-column --- */
+    #writing > div > div:first-child {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 20px !important;
+    }
+    /* Post rows have gridTemplateColumns: "160px 1fr 32px" */
+    #writing a[style*="160px"] {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 6px !important;
+      padding: 20px 0 !important;
+      position: relative !important;
+    }
+    /* postMeta (date/readtime): keep but show inline */
+    #writing a[style*="160px"] > div:first-child {
+      display: flex !important;
+      flex-direction: row !important;
+      gap: 12px !important;
+      align-items: center !important;
+      padding-top: 0 !important;
+    }
+    /* Arrow: absolute top-right so it doesn't break the column flow */
+    #writing a[style*="160px"] > div:nth-child(3) {
+      position: absolute !important;
+      top: 20px !important;
+      right: 0 !important;
+    }
+
+    /* --- LINKS: convert rows from 4-col grid to flex-column --- */
+    /* Rows have gridTemplateColumns: "160px 220px 1fr 32px" */
+    #links a[style*="160px"] {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 6px !important;
+      padding: 16px 0 !important;
+      position: relative !important;
+    }
+    /* Hide the description (3rd span child) */
+    #links a[style*="160px"] > span:nth-child(3) { display: none !important; }
+    /* Arrow: absolute right, vertically centred */
+    #links a[style*="160px"] > span:last-child {
+      position: absolute !important;
+      top: 50% !important;
+      right: 0 !important;
+      transform: translateY(-50%) !important;
+    }
+
+    /* --- FOOTER: stack top, 2-col link grid --- */
+    footer > div > div:first-child {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 16px !important;
+    }
+    footer [style*="text-align: right"] { text-align: left !important; }
+    /* Mid grid: repeat(4, 1fr) → repeat(2, 1fr) */
+    footer [style*="repeat(4, 1fr)"] {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+    footer > div > div:last-child {
+      flex-direction: column !important;
+      gap: 8px !important;
+    }
+  }
 </style>
 </head>
 <body>
