@@ -40,22 +40,21 @@
   .all-posts:hover { color: #F5F0E8 !important; }
 
   /* =========================================================
-     MOBILE — overrides React inline styles via !important.
-     These rules are the source of truth for layout ≤768px.
-     The JS isMobile checks in components do the same thing;
-     these CSS rules act as a guaranteed fallback if component
-     files are cached and serve stale code.
+     MOBILE — structural selectors only (no [style*] matching).
+     Uses child position selectors which work regardless of how
+     the browser serialises React's inline style attributes.
      ========================================================= */
   @media (max-width: 768px) {
 
-    /* Prevent any element causing horizontal scroll */
-    html { overflow-x: hidden; }
+    /* Kill any horizontal overflow causing the page to be wider than the viewport */
+    html, body { overflow-x: hidden; max-width: 100vw; }
 
-    /* --- NAV --- */
+    /* ---- NAV ---- */
     nav { padding-left: 20px !important; padding-right: 20px !important; }
-    nav ul { display: none !important; }
+    nav > ul { display: none !important; }
 
-    /* --- SECTION INNER PADDING (all sections have an id; direct child div is the inner wrapper) --- */
+    /* ---- SECTION INNER PADDING ----
+       Every section uses its first direct-child div as the inner padding wrapper. */
     #pillars > div,
     #about   > div,
     #writing > div,
@@ -64,108 +63,143 @@
       padding-left: 20px !important;
       padding-right: 20px !important;
     }
-    /* Hero inner is the 2nd child of its section (1st is the ticker bar) */
+    /* Hero: section structure is ticker(1st) / inner(2nd) / portrait(3rd) */
     #hero section > div:nth-child(2) {
       padding-left: 20px !important;
       padding-right: 20px !important;
       padding-bottom: 48px !important;
     }
 
-    /* --- HERO: hide portrait, shrink name, stack bottom row --- */
-    /* Portrait slot is the 3rd child of the section */
+    /* ---- HERO ----
+       Structure inside #hero:
+         section
+           div[1] ticker
+           div[2] inner
+             div[1] nameMega  ← spans here are the big letters
+             div[2] metaBar
+             div[3] bottom    ← bio + CTA + identity badges
+           div[3] portrait    ← hide this */
     #hero section > div:nth-child(3) { display: none !important; }
-    /* Name letter spans have font-size: clamp(80px, …) — shrink the minimum */
-    #hero section span[style*="clamp(80px"] {
+
+    /* Shrink the name letter spans (all spans inside nameMega = inner's first child) */
+    #hero section > div:nth-child(2) > div:first-child span {
       font-size: clamp(52px, 13vw, 172px) !important;
     }
-    /* Bottom content row (last child of inner div): stack vertically */
+    /* Stack the bottom content row vertically */
     #hero section > div:nth-child(2) > div:last-child {
       flex-direction: column !important;
       align-items: flex-start !important;
       gap: 32px !important;
     }
-    /* Identity badges (bottomRight): align left on mobile */
+    /* Identity badges cluster (last child of bottom row): left-align */
     #hero section > div:nth-child(2) > div:last-child > div:last-child {
       align-items: flex-start !important;
     }
 
-    /* --- ABOUT: single-column layout --- */
-    /* Grid has gridTemplateColumns: "360px 1fr" — collapse to 1fr */
-    #about [style*="360px"] {
+    /* ---- ABOUT ----
+       Structure: section#about > div(inner) > div(grid: 360px 1fr)
+                                                > div(portraitCol) > div(portraitFrame)
+                                                > div(textCol) */
+    #about > div > div {
       grid-template-columns: 1fr !important;
       gap: 40px !important;
     }
-    #about [style*="sticky"] { position: static !important; }
-    /* Portrait frame aspect ratio */
-    #about [style*="3/4"] {
+    /* Remove sticky from portrait column */
+    #about > div > div > div:first-child { position: static !important; }
+    /* Landscape crop on portrait frame */
+    #about > div > div > div:first-child > div:first-child {
       aspect-ratio: 4/3 !important;
       max-height: 280px !important;
     }
 
-    /* --- PILLARS: single-column grids --- */
-    /* Matches both "1fr 1fr" (top) and "1fr 1fr 1fr" (bottom) */
-    #pillars [style*="1fr 1fr"] { grid-template-columns: 1fr !important; }
-    /* Section header side-by-side → stacked */
-    #pillars [style*="auto 1fr auto"] { grid-template-columns: 1fr !important; }
+    /* ---- PILLARS ----
+       Structure: section#pillars > div(inner)
+                                     > div[1](sectionHeader — auto 1fr auto grid)
+                                     > div[2](gridTop — 1fr 1fr)
+                                     > div[3](gridBottom — 1fr 1fr 1fr) */
+    #pillars > div > div:first-child  { grid-template-columns: 1fr !important; }
+    #pillars > div > div:nth-child(2) { grid-template-columns: 1fr !important; }
+    #pillars > div > div:nth-child(3) { grid-template-columns: 1fr !important; }
 
-    /* --- WRITING: stack header; convert post rows from grid to flex-column --- */
+    /* ---- WRITING ----
+       Structure: section#writing > div(inner)
+                                     > div[1](header — flex space-between)
+                                         > div    heading block
+                                         > a      subscribe button
+                                     > div[2](postList)
+                                         > a(PostRow) × 3   ← each is a grid row
+                                             > div[1] postMeta (date / readtime)
+                                             > div[2] postContent (title / excerpt)
+                                             > div[3] arrow ↗
+                                     > div[3](footer — "All posts" link) */
+    /* Stack heading + subscribe button */
     #writing > div > div:first-child {
       flex-direction: column !important;
       align-items: flex-start !important;
       gap: 20px !important;
     }
-    /* Post rows have gridTemplateColumns: "160px 1fr 32px" */
-    #writing a[style*="160px"] {
+    /* Convert each post row from a 3-column grid to a flex column */
+    #writing > div > div:nth-child(2) > a {
       display: flex !important;
       flex-direction: column !important;
       gap: 6px !important;
       padding: 20px 0 !important;
       position: relative !important;
     }
-    /* postMeta (date/readtime): keep but show inline */
-    #writing a[style*="160px"] > div:first-child {
+    /* Show date + readtime on one line */
+    #writing > div > div:nth-child(2) > a > div:first-child {
       display: flex !important;
       flex-direction: row !important;
       gap: 12px !important;
       align-items: center !important;
       padding-top: 0 !important;
     }
-    /* Arrow: absolute top-right so it doesn't break the column flow */
-    #writing a[style*="160px"] > div:nth-child(3) {
+    /* Arrow: pull to top-right so it doesn't stack at the bottom */
+    #writing > div > div:nth-child(2) > a > div:nth-child(3) {
       position: absolute !important;
       top: 20px !important;
       right: 0 !important;
     }
 
-    /* --- LINKS: convert rows from 4-col grid to flex-column --- */
-    /* Rows have gridTemplateColumns: "160px 220px 1fr 32px" */
-    #links a[style*="160px"] {
+    /* ---- LINKS ----
+       Structure: section#links > div(inner)
+                                   > div[1] eyebrow
+                                   > h2     heading
+                                   > div    list (last child)
+                                       > a(LinkRow) × n
+                                           > span[1] pill
+                                           > span[2] label
+                                           > span[3] desc   ← hide
+                                           > span[4] arrow  ↗ */
+    #links > div > div:last-child > a {
       display: flex !important;
       flex-direction: column !important;
       gap: 6px !important;
       padding: 16px 0 !important;
       position: relative !important;
     }
-    /* Hide the description (3rd span child) */
-    #links a[style*="160px"] > span:nth-child(3) { display: none !important; }
-    /* Arrow: absolute right, vertically centred */
-    #links a[style*="160px"] > span:last-child {
+    #links > div > div:last-child > a > span:nth-child(3) { display: none !important; }
+    #links > div > div:last-child > a > span:last-child {
       position: absolute !important;
-      top: 50% !important;
+      top: 14px !important;
       right: 0 !important;
-      transform: translateY(-50%) !important;
     }
 
-    /* --- FOOTER: stack top, 2-col link grid --- */
+    /* ---- FOOTER ----
+       Structure: footer > div(inner)
+                            > div[1] top (flex space-between)
+                            > div[2] divider
+                            > div[3] mid (grid repeat(4,1fr))
+                            > div[4] divider
+                            > div[5] bottom (flex space-between) — :last-child */
     footer > div > div:first-child {
       flex-direction: column !important;
       align-items: flex-start !important;
       gap: 16px !important;
     }
-    footer [style*="text-align: right"] { text-align: left !important; }
-    /* Mid grid: repeat(4, 1fr) → repeat(2, 1fr) */
-    footer [style*="repeat(4, 1fr)"] {
+    footer > div > div:nth-child(3) {
       grid-template-columns: repeat(2, 1fr) !important;
+      gap: 28px !important;
     }
     footer > div > div:last-child {
       flex-direction: column !important;
