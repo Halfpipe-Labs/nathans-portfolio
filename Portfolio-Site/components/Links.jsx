@@ -97,7 +97,7 @@ const LinkRow = ({ item, isLast, isMobile }) => {
 };
 
 const Links = () => {
-  const isMobile = useIsMobile();
+  const isMobile = window.innerWidth <= 768;
 
   return (
     <section style={linksStyles.section} id="links" data-screen-label="Links">

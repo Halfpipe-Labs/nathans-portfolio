@@ -1,7 +1,7 @@
 // Footer.jsx — Site footer
 
 const Footer = () => {
-  const isMobile = useIsMobile();
+  const isMobile = window.innerWidth <= 768;
 
   return (
     <footer style={footerStyles.footer} data-screen-label="Footer">

@@ -3,7 +3,7 @@
 const HeroC = () => {
   const [mounted, setMounted] = React.useState(false);
   const [scrollY, setScrollY] = React.useState(0);
-  const isMobile = useIsMobile();
+  const isMobile = window.innerWidth <= 768;
 
   React.useEffect(() => {
     const t = setTimeout(() => setMounted(true), 60);

@@ -1,7 +1,7 @@
 // About.jsx — About section with portrait + bio
 
 const About = () => {
-  const isMobile = useIsMobile();
+  const isMobile = window.innerWidth <= 768;
 
   const stats = [
     { val: '10+', label: 'Years in digital marketing' },

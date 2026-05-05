@@ -126,7 +126,7 @@ const PillarCard = ({ pillar }) => {
 };
 
 const Pillars = () => {
-  const isMobile = useIsMobile();
+  const isMobile = window.innerWidth <= 768;
 
   return (
     <section style={pillarsStyles.section} id="pillars" data-screen-label="Pillars">

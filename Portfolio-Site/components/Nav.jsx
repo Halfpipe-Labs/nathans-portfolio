@@ -3,7 +3,7 @@
 const Nav = ({ activeSection }) => {
   const [scrolled, setScrolled] = React.useState(false);
   const [menuOpen, setMenuOpen] = React.useState(false);
-  const isMobile = useIsMobile();
+  const isMobile = window.innerWidth <= 768;
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);

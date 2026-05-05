@@ -98,7 +98,7 @@ const PostRow = ({ post, isLast, isMobile }) => {
 };
 
 const Writing = () => {
-  const isMobile = useIsMobile();
+  const isMobile = window.innerWidth <= 768;
 
   return (
     <section style={writingStyles.section} id="writing" data-screen-label="Writing">
