@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Political Compass Quiz — Nathan Knows Nothing</title>
+<meta name="description" content="Find out where you sit on the political spectrum. A 24-question quiz covering economics, environment, justice, and more — with a thinking style score inspired by Tim Urban.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="colors_and_type.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    min-height: 100vh;
+  }
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--color-bg); }
+  ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+
+  a { color: inherit; }
+
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: var(--space-8) var(--space-5) var(--space-9);
+  }
+
+  /* ---- Eyebrow / heading ---- */
+  .eyebrow {
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--ls-widest);
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: var(--space-4);
+  }
+  h1.title {
+    font-family: var(--font-display);
+    font-size: clamp(48px, 11vw, 96px);
+    font-weight: var(--fw-regular);
+    line-height: var(--lh-tight);
+    letter-spacing: var(--ls-normal);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-5);
+  }
+  .intro-lead {
+    font-size: var(--text-md);
+    line-height: var(--lh-loose);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-7);
+    max-width: 56ch;
+  }
+
+  /* ---- Progress ---- */
+  .progress-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: var(--space-3);
+  }
+  .progress-label {
+    font-size: var(--text-xs);
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--ls-wider);
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+  }
+  .qtype-label {
+    font-size: var(--text-xs);
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--ls-wide);
+    text-transform: uppercase;
+    color: var(--color-text-disabled);
+  }
+  .progress-track {
+    height: 3px;
+    width: 100%;
+    background: var(--color-border-subtle);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: var(--space-8);
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--color-accent);
+    width: 0%;
+    transition: width 350ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* ---- Question ---- */
+  .question-stage { position: relative; }
+  .qcard {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 220ms ease, transform 220ms ease;
+  }
+  .qcard.leaving {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  .qtext {
+    font-family: var(--font-body);
+    font-size: clamp(20px, 3.5vw, 26px);
+    font-weight: var(--fw-medium);
+    line-height: 1.35;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-7);
+  }
+
+  .options { display: flex; flex-direction: column; gap: var(--space-3); }
+
+  .option {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    width: 100%;
+    text-align: left;
+    padding: 16px 18px;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-primary);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: var(--lh-normal);
+    cursor: pointer;
+    transition: border-color 150ms ease, background 150ms ease, transform 80ms ease;
+  }
+  .option:hover {
+    border-color: var(--color-border-strong);
+    background: var(--color-surface-2);
+  }
+  .option:active { transform: scale(0.995); }
+  .option.selected {
+    border-color: var(--color-accent);
+    background: var(--color-surface-2);
+  }
+  .option .marker {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    border: 1px solid var(--color-border-strong);
+    transition: border-color 150ms ease, background 150ms ease;
+    position: relative;
+  }
+  .option.selected .marker {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+  }
+  .option.selected .marker::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border-radius: 999px;
+    background: var(--color-text-inverse);
+  }
+  .option .opt-label { flex: 1; }
+
+  /* ---- Nav buttons ---- */
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-8);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 12px 24px;
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: var(--fw-semibold);
+    letter-spacing: var(--ls-wide);
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    border-radius: var(--radius-sm);
+    transition: opacity 150ms ease, background 150ms ease, border-color 150ms ease, color 150ms ease;
+    text-decoration: none;
+  }
+  .btn-primary {
+    background: var(--color-accent);
+    color: var(--color-text-inverse);
+    border: 1px solid var(--color-accent);
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-primary:disabled {
+    background: var(--color-surface-2);
+    border-color: var(--color-border);
+    color: var(--color-text-disabled);
+    cursor: not-allowed;
+    opacity: 1;
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--color-text-secondary);
+    border: 1px solid transparent;
+  }
+  .btn-ghost:hover { color: var(--color-text-primary); }
+  .btn-ghost:disabled { opacity: 0; pointer-events: none; }
+  .btn-outline {
+    background: transparent;
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border-strong);
+  }
+  .btn-outline:hover { border-color: var(--color-text-primary); background: var(--color-surface-2); }
+
+  /* ---- Start screen ---- */
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-5);
+    margin-bottom: var(--space-7);
+    padding: var(--space-5) 0;
+    border-top: 1px solid var(--color-border-subtle);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+  .meta-item { display: flex; flex-direction: column; gap: 4px; }
+  .meta-item .num {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    line-height: 1;
+    color: var(--color-accent);
+  }
+  .meta-item .cap {
+    font-size: var(--text-xs);
+    letter-spacing: var(--ls-wide);
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+  }
+
+  /* ---- Results ---- */
+  .hidden { display: none !important; }
+
+  .result-section { margin-bottom: var(--space-9); }
+  .result-eyebrow {
+    font-size: var(--text-xs);
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--ls-widest);
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: var(--space-3);
+  }
+  h2.result-h {
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: var(--fw-regular);
+    line-height: var(--lh-snug);
+    margin-bottom: var(--space-5);
+  }
+  h3.result-sub {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: var(--fw-regular);
+    line-height: var(--lh-snug);
+    margin-bottom: var(--space-4);
+  }
+
+  .chart-shell {
+    position: relative;
+    width: 100%;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-5);
+  }
+  .chart-canvas-box { position: relative; width: 100%; aspect-ratio: 1 / 1; max-height: 520px; }
+
+  .toggle-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-5);
+  }
+  .toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--ls-wide);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: border-color 150ms ease, color 150ms ease, opacity 150ms ease;
+  }
+  .toggle .dot {
+    width: 10px; height: 10px; border-radius: 999px;
+    background: var(--toggle-color, #888);
+  }
+  .toggle.off { opacity: 0.4; }
+  .toggle.off .dot { background: var(--color-text-disabled); }
+  .toggle:hover { color: var(--color-text-primary); border-color: var(--color-border-strong); }
+
+  /* ---- Match cards ---- */
+  .match-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+  .match-card {
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-5);
+  }
+  .match-card.closest { border-color: var(--color-accent); }
+  .match-card .cap {
+    font-size: var(--text-xs);
+    letter-spacing: var(--ls-wide);
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-2);
+  }
+  .match-card .party {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    line-height: 1;
+    color: var(--color-text-primary);
+  }
+  .match-card.closest .party { color: var(--color-accent); }
+  .small-note {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    font-style: italic;
+  }
+
+  /* ---- Profile ---- */
+  .profile-text {
+    font-size: var(--text-md);
+    line-height: var(--lh-loose);
+    color: var(--color-text-primary);
+  }
+
+  /* ---- Gauge ---- */
+  .gauge-zone-label {
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    color: var(--color-accent);
+    line-height: 1;
+    margin-bottom: var(--space-4);
+  }
+  .gauge-track {
+    position: relative;
+    height: 14px;
+    width: 100%;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: var(--space-3);
+  }
+  .gauge-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--color-accent-dim), var(--color-accent));
+    border-radius: 999px;
+    transition: width 1100ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .gauge-scale {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--text-xs);
+    letter-spacing: var(--ls-wide);
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-6);
+  }
+  .gauge-explainer p {
+    font-size: var(--text-base);
+    line-height: var(--lh-loose);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-4);
+  }
+  .gauge-explainer a { color: var(--color-accent); text-decoration: underline; text-underline-offset: 3px; }
+
+  /* ---- Methodology + share ---- */
+  .divider { height: 1px; background: var(--color-border-subtle); margin: var(--space-8) 0; }
+  .methodology {
+    font-size: var(--text-sm);
+    line-height: var(--lh-loose);
+    color: var(--color-text-secondary);
+  }
+  .share-box {
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-6);
+    text-align: center;
+    margin-bottom: var(--space-8);
+  }
+  .share-box .share-q {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-2);
+  }
+  .share-box .share-sub { font-size: var(--text-base); color: var(--color-text-secondary); margin-bottom: var(--space-4); }
+  .share-link {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--color-accent);
+    word-break: break-all;
+  }
+  .restart-row { text-align: center; margin-top: var(--space-7); }
+
+  .back-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--text-sm);
+    letter-spacing: var(--ls-wide);
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    margin-bottom: var(--space-7);
+    transition: color 150ms ease;
+  }
+  .back-home:hover { color: var(--color-text-primary); }
+
+  @media (max-width: 600px) {
+    .wrap { padding: var(--space-6) 20px var(--space-8); }
+    .match-grid { grid-template-columns: 1fr; }
+    .nav-row { gap: var(--space-2); }
+    .btn { padding: 12px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <a class="back-home" href="index.html">← Nathan Knows Nothing</a>
+
+  <!-- ================= START SCREEN ================= -->
+  <section id="screen-start">
+    <div class="eyebrow">A Thinking Tool</div>
+    <h1 class="title">Political<br>Compass Quiz</h1>
+    <p class="intro-lead">
+      Twenty-four questions across six axes — economics, social freedom, the
+      environment, institutions, Britain's place in the world, and justice. At the
+      end you'll see where you sit, which UK party you land closest to, and a
+      separate score for <em>how</em> you hold your beliefs.
+    </p>
+    <div class="meta-row">
+      <div class="meta-item"><span class="num">24</span><span class="cap">Questions</span></div>
+      <div class="meta-item"><span class="num">6</span><span class="cap">Policy Axes</span></div>
+      <div class="meta-item"><span class="num">~5</span><span class="cap">Minutes</span></div>
+    </div>
+    <button class="btn btn-primary" id="start-btn">Start the quiz →</button>
+  </section>
+
+  <!-- ================= QUIZ SCREEN ================= -->
+  <section id="screen-quiz" class="hidden">
+    <div class="progress-head">
+      <span class="progress-label" id="progress-label">Question 1 of 24</span>
+      <span class="qtype-label" id="qtype-label">Agree / Disagree</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+
+    <div class="question-stage">
+      <div class="qcard" id="qcard">
+        <div class="qtext" id="qtext"></div>
+        <div class="options" id="options"></div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-ghost" id="back-btn">← Back</button>
+      <button class="btn btn-primary" id="next-btn" disabled>Next →</button>
+    </div>
+  </section>
+
+  <!-- ================= RESULTS SCREEN ================= -->
+  <section id="screen-results" class="hidden">
+    <div class="eyebrow">Your Results</div>
+    <h1 class="title">The Verdict</h1>
+
+    <!-- Radar -->
+    <div class="result-section">
+      <h2 class="result-h">Where You Sit</h2>
+      <div class="chart-shell">
+        <div class="chart-canvas-box"><canvas id="radar"></canvas></div>
+      </div>
+      <div class="toggle-row" id="toggle-row"></div>
+    </div>
+
+    <!-- Matches -->
+    <div class="result-section">
+      <h2 class="result-h">Party Match</h2>
+      <div class="match-grid">
+        <div class="match-card closest">
+          <div class="cap">Closest match</div>
+          <div class="party" id="closest-party"></div>
+        </div>
+        <div class="match-card">
+          <div class="cap">Furthest match</div>
+          <div class="party" id="furthest-party"></div>
+        </div>
+      </div>
+      <p class="small-note">This is based on policy position proximity, not an endorsement.</p>
+    </div>
+
+    <!-- Profile -->
+    <div class="result-section">
+      <h2 class="result-h">Your Political Profile</h2>
+      <p class="profile-text" id="profile-text"></p>
+    </div>
+
+    <!-- Thinking gauge -->
+    <div class="result-section">
+      <h2 class="result-h">Your Thinking Style</h2>
+      <div class="gauge-zone-label" id="gauge-zone"></div>
+      <div class="gauge-track"><div class="gauge-fill" id="gauge-fill"></div></div>
+      <div class="gauge-scale"><span>0 · Dogmatic</span><span>Empirical · 100</span></div>
+      <div class="gauge-explainer">
+        <p>This score isn't about how intelligent you are — it's about how you relate to ideas you already hold.</p>
+        <p>At the empirical end, you treat your political views like hypotheses: things to test, update, and revise when evidence changes. At the dogmatic end, your values and identity are more tightly bound to your positions, making them harder to shift.</p>
+        <p>Neither extreme is purely good or bad. Strong values and consistency matter. But research consistently shows that empirical thinkers are better at updating on new information, finding common ground, and recognising when policies aren't working.</p>
+        <p>This framework was inspired by Tim Urban's <a href="https://waitbutwhy.com/2023/01/whats-our-problem.html" target="_blank" rel="noopener">What's Our Problem?</a></p>
+      </div>
+    </div>
+
+    <!-- Share -->
+    <div class="share-box">
+      <div class="share-q">How did you score?</div>
+      <div class="share-sub">Share your results — screenshot this page or copy the link:</div>
+      <div class="share-link">nathanknowsnothing.co.uk/political-quiz</div>
+    </div>
+
+    <div class="divider"></div>
+    <p class="methodology">
+      Party positions are scored on a 60/40 blend of verified policy record and
+      consistent rhetorical positioning. Scores reflect positions as of mid-2025 and
+      will be updated periodically. This quiz is built by Nathan Knows Nothing and is
+      intended as a thinking tool, not a scientific instrument.
+    </p>
+
+    <div class="restart-row">
+      <button class="btn btn-outline" id="restart-btn">Retake the quiz</button>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ============================================================
+     QUESTION DATA
+     For each policy question, "axis" + scoring.
+     Likert options carry their own score values (already directional).
+     Forced choice: A and B carry score values.
+     ============================================================ */
+
+  // Helper builders for likert option sets.
+  // policyAgreeLow: Strongly Agree=1 ... Strongly Disagree=5
+  function likertPolicyAgreeLow() {
+    return [
+      { label: 'Strongly Agree', value: 1 },
+      { label: 'Agree', value: 2 },
+      { label: 'Neutral', value: 3 },
+      { label: 'Disagree', value: 4 },
+      { label: 'Strongly Disagree', value: 5 },
+    ];
+  }
+  // thinking empirical: Strongly Agree=5 ... Strongly Disagree=1
+  function likertEmpirical() {
+    return [
+      { label: 'Strongly Agree', value: 5 },
+      { label: 'Agree', value: 4 },
+      { label: 'Neutral', value: 3 },
+      { label: 'Disagree', value: 2 },
+      { label: 'Strongly Disagree', value: 1 },
+    ];
+  }
+
+  const AGREE = 'Agree / Disagree';
+  const CHOICE = 'Pick One';
+
+  const questions = [
+    /* ---------- ECONOMIC ---------- */
+    { group: 'policy', axis: 'Economic', type: 'likert', typeLabel: AGREE,
+      text: 'The government has a responsibility to ensure no one falls below a basic standard of living, regardless of their personal circumstances.',
+      options: likertPolicyAgreeLow() },
+    { group: 'policy', axis: 'Economic', type: 'likert', typeLabel: AGREE,
+      text: 'Wealthy individuals and corporations should pay significantly higher taxes to fund better public services.',
+      options: likertPolicyAgreeLow() },
+    { group: 'policy', axis: 'Economic', type: 'choice', typeLabel: CHOICE,
+      text: 'Which matters more to you?',
+      options: [
+        { label: 'Making sure the economic system lifts everyone up, even if that limits how much the most successful can accumulate', value: 1 },
+        { label: 'Allowing people to earn and keep what their talent and hard work produces, even if that means significant inequality', value: 5 },
+      ] },
+
+    /* ---------- SOCIAL ---------- */
+    { group: 'policy', axis: 'Social', type: 'likert', typeLabel: AGREE,
+      text: "Adults should be free to make their own lifestyle choices — including drug use — as long as they don't directly harm others.",
+      options: likertPolicyAgreeLow() },
+    { group: 'policy', axis: 'Social', type: 'choice', typeLabel: CHOICE,
+      text: 'When personal freedom and social order conflict, which should generally win?',
+      options: [
+        { label: 'Personal freedom — the state should stay out of people’s private lives', value: 1 },
+        { label: 'Social order — sometimes individual freedoms need restricting for the greater good', value: 5 },
+      ] },
+    { group: 'policy', axis: 'Social', type: 'choice', typeLabel: CHOICE,
+      text: 'Which comes closer to your view?',
+      options: [
+        { label: 'The state generally has too much say over how people live their private lives', value: 1 },
+        { label: 'Some restrictions on personal behaviour are a reasonable price for a safe, functioning society', value: 5 },
+      ] },
+
+    /* ---------- ENVIRONMENTAL ---------- */
+    { group: 'policy', axis: 'Environmental', type: 'likert', typeLabel: AGREE,
+      text: 'Addressing climate change and ecological collapse should be a top priority for government, even at significant short-term economic cost.',
+      options: likertPolicyAgreeLow() },
+    { group: 'policy', axis: 'Environmental', type: 'choice', typeLabel: CHOICE,
+      text: 'Which concerns you more?',
+      options: [
+        { label: "That we're not acting nearly fast enough on climate change and ecological collapse", value: 1 },
+        { label: "That climate policy is moving too fast and damaging ordinary people's living standards", value: 5 },
+      ] },
+    { group: 'policy', axis: 'Environmental', type: 'likert', typeLabel: AGREE,
+      text: 'Water companies, energy firms and other private operators of essential infrastructure should face much stronger regulation and penalties for environmental damage.',
+      options: likertPolicyAgreeLow() },
+
+    /* ---------- INSTITUTIONAL ---------- */
+    { group: 'policy', axis: 'Institutional', type: 'likert', typeLabel: AGREE,
+      text: 'Key public services like the NHS should be run by independent expert bodies, insulated from changes in government.',
+      options: likertPolicyAgreeLow() },
+    { group: 'policy', axis: 'Institutional', type: 'likert', typeLabel: AGREE,
+      text: "Short-term political thinking — driven by election cycles — is one of the biggest barriers to solving the UK's long-term problems.",
+      options: likertPolicyAgreeLow() },
+    { group: 'policy', axis: 'Institutional', type: 'choice', typeLabel: CHOICE,
+      text: 'Which would you prefer?',
+      options: [
+        { label: 'Public services run by empowered independent bodies, accountable to outcomes not politicians', value: 1 },
+        { label: 'Public services directly controlled by elected government, so voters can hold politicians accountable at elections', value: 5 },
+      ] },
+
+    /* ---------- GLOBAL ---------- */
+    { group: 'policy', axis: 'Global', type: 'likert', typeLabel: AGREE,
+      text: 'Britain has a moral obligation to offer safety to asylum seekers, even when it places pressure on public services.',
+      options: likertPolicyAgreeLow() },
+    { group: 'policy', axis: 'Global', type: 'likert', typeLabel: AGREE,
+      text: 'The UK should maintain or increase its foreign aid budget as a matter of international responsibility.',
+      options: likertPolicyAgreeLow() },
+    { group: 'policy', axis: 'Global', type: 'choice', typeLabel: CHOICE,
+      text: "Which best describes your view of Britain's place in the world?",
+      options: [
+        { label: 'Britain should be an active global citizen — engaged in international institutions, diplomacy, and aid', value: 1 },
+        { label: "Britain should focus primarily on its own citizens' needs before spending money and political capital abroad", value: 5 },
+      ] },
+
+    /* ---------- JUSTICE ---------- */
+    { group: 'policy', axis: 'Justice', type: 'likert', typeLabel: AGREE,
+      text: 'Prison should focus primarily on rehabilitation and addressing root causes of offending, rather than punishment.',
+      options: likertPolicyAgreeLow() },
+    { group: 'policy', axis: 'Justice', type: 'likert', typeLabel: AGREE,
+      text: 'Society should make it much easier for people with criminal records to reintegrate, rather than treating them as permanently defined by their offences.',
+      options: likertPolicyAgreeLow() },
+    { group: 'policy', axis: 'Justice', type: 'choice', typeLabel: CHOICE,
+      text: 'When someone commits a serious crime, what should the priority be?',
+      options: [
+        { label: 'Understanding what led them to offend and preventing reoffending', value: 1 },
+        { label: 'Ensuring consequences proportionate to the harm they caused', value: 5 },
+      ] },
+
+    /* ---------- THINKING STYLE ---------- */
+    { group: 'thinking', type: 'likert', typeLabel: AGREE,
+      text: 'When I encounter evidence that contradicts something I believe, I find it genuinely interesting rather than threatening.',
+      options: likertEmpirical() },
+    { group: 'thinking', type: 'choice', typeLabel: CHOICE,
+      text: 'Which comes closer to how you approach your own beliefs?',
+      options: [
+        { label: "I'd rather reach an uncomfortable truth than defend a comfortable assumption", value: 5 },
+        { label: 'Lived experience and personal values are just as valid a guide as data and evidence', value: 1 },
+      ] },
+    { group: 'thinking', type: 'likert', typeLabel: AGREE,
+      text: 'I can find genuine merit in political positions I disagree with.',
+      options: likertEmpirical() },
+    { group: 'thinking', type: 'choice', typeLabel: CHOICE,
+      text: 'If a policy you strongly supported turned out to have solid evidence against it working, would you:',
+      options: [
+        { label: 'Seriously reconsider your support for it', value: 5 },
+        { label: 'Look harder for evidence that supports it', value: 1 },
+      ] },
+    { group: 'thinking', type: 'likert', typeLabel: AGREE,
+      text: 'People who hold strong political views different from mine are usually motivated by genuine values, not stupidity or bad faith.',
+      options: likertEmpirical() },
+    { group: 'thinking', type: 'choice', typeLabel: CHOICE,
+      text: 'The most important thing in a political debate is:',
+      options: [
+        { label: "Finding out what's actually true and what actually works", value: 5 },
+        { label: 'Standing firm on what you believe is right', value: 1 },
+      ] },
+  ];
+
+  /* ============================================================
+     PARTY DATA
+     ============================================================ */
+  const AXES = ['Economic', 'Social', 'Environmental', 'Institutional', 'Global', 'Justice'];
+
+  const partyScores = {
+    labour:        { Economic: 3, Social: 5, Environmental: 3, Institutional: 5, Global: 2, Justice: 5 },
+    conservative:  { Economic: 7, Social: 7, Environmental: 8, Institutional: 7, Global: 6, Justice: 7 },
+    libdem:        { Economic: 3, Social: 2, Environmental: 2, Institutional: 2, Global: 1, Justice: 3 },
+    green:         { Economic: 1, Social: 2, Environmental: 1, Institutional: 3, Global: 1, Justice: 1 },
+    reform:        { Economic: 7, Social: 8, Environmental: 9, Institutional: 7, Global: 9, Justice: 8 },
+    snp:           { Economic: 3, Social: 3, Environmental: 2, Institutional: 4, Global: 2, Justice: 2 },
+  };
+
+  const partyMeta = {
+    labour:       { name: 'Labour',        color: 'rgba(220, 80, 80, 1)',  fill: 'rgba(220, 80, 80, 0.08)' },
+    conservative: { name: 'Conservative',  color: 'rgba(80, 120, 200, 1)', fill: 'rgba(80, 120, 200, 0.08)' },
+    libdem:       { name: 'Lib Dem',       color: 'rgba(220, 150, 60, 1)', fill: 'rgba(220, 150, 60, 0.08)' },
+    green:        { name: 'Green',         color: 'rgba(80, 160, 80, 1)',  fill: 'rgba(80, 160, 80, 0.08)' },
+    reform:       { name: 'Reform',        color: 'rgba(140, 80, 180, 1)', fill: 'rgba(140, 80, 180, 0.08)' },
+    snp:          { name: 'SNP',           color: 'rgba(200, 180, 60, 1)', fill: 'rgba(200, 180, 60, 0.08)' },
+  };
+
+  const ACCENT = '#FFE234';
+
+  // Axis pole labels for the radar.
+  const axisPoles = {
+    Economic:      ['Redistribution', 'Free Market'],
+    Social:        ['Libertarian', 'Authoritarian'],
+    Environmental: ['Green', 'Growth'],
+    Institutional: ['Technocratic', 'Political'],
+    Global:        ['Internationalist', 'Nationalist'],
+    Justice:       ['Rehabilitative', 'Punitive'],
+  };
+
+  /* ============================================================
+     STATE
+     ============================================================ */
+  const answers = new Array(questions.length).fill(null); // stores chosen option index
+  let current = 0;
+  let chart = null;
+  const partyVisible = {};
+  Object.keys(partyMeta).forEach(k => { partyVisible[k] = true; });
+
+  /* ============================================================
+     DOM
+     ============================================================ */
+  const el = {
+    start: document.getElementById('screen-start'),
+    quiz: document.getElementById('screen-quiz'),
+    results: document.getElementById('screen-results'),
+    startBtn: document.getElementById('start-btn'),
+    progressLabel: document.getElementById('progress-label'),
+    qtypeLabel: document.getElementById('qtype-label'),
+    progressFill: document.getElementById('progress-fill'),
+    qcard: document.getElementById('qcard'),
+    qtext: document.getElementById('qtext'),
+    options: document.getElementById('options'),
+    backBtn: document.getElementById('back-btn'),
+    nextBtn: document.getElementById('next-btn'),
+    restartBtn: document.getElementById('restart-btn'),
+  };
+
+  /* ============================================================
+     QUIZ RENDERING
+     ============================================================ */
+  function renderQuestion() {
+    const q = questions[current];
+    el.qtext.textContent = q.text;
+    el.qtypeLabel.textContent = q.typeLabel;
+    el.progressLabel.textContent = 'Question ' + (current + 1) + ' of ' + questions.length;
+    el.progressFill.style.width = (((current + 1) / questions.length) * 100) + '%';
+
+    el.options.innerHTML = '';
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'option' + (answers[current] === i ? ' selected' : '');
+      btn.type = 'button';
+      const marker = document.createElement('span');
+      marker.className = 'marker';
+      const label = document.createElement('span');
+      label.className = 'opt-label';
+      label.textContent = opt.label;
+      btn.appendChild(marker);
+      btn.appendChild(label);
+      btn.addEventListener('click', () => selectOption(i));
+      el.options.appendChild(btn);
+    });
+
+    el.backBtn.disabled = current === 0;
+    el.nextBtn.disabled = answers[current] === null;
+    el.nextBtn.textContent = current === questions.length - 1 ? 'See results →' : 'Next →';
+  }
+
+  function selectOption(i) {
+    answers[current] = i;
+    // update selected visual
+    Array.prototype.forEach.call(el.options.children, (child, idx) => {
+      child.classList.toggle('selected', idx === i);
+    });
+    el.nextBtn.disabled = false;
+  }
+
+  function transitionTo(nextIndex, dir) {
+    el.qcard.classList.add('leaving');
+    setTimeout(() => {
+      current = nextIndex;
+      renderQuestion();
+      el.qcard.classList.remove('leaving');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 200);
+  }
+
+  el.nextBtn.addEventListener('click', () => {
+    if (answers[current] === null) return;
+    if (current === questions.length - 1) {
+      showResults();
+    } else {
+      transitionTo(current + 1, 1);
+    }
+  });
+
+  el.backBtn.addEventListener('click', () => {
+    if (current === 0) return;
+    transitionTo(current - 1, -1);
+  });
+
+  el.startBtn.addEventListener('click', () => {
+    el.start.classList.add('hidden');
+    el.quiz.classList.remove('hidden');
+    current = 0;
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  });
+
+  el.restartBtn.addEventListener('click', () => {
+    for (let i = 0; i < answers.length; i++) answers[i] = null;
+    current = 0;
+    if (chart) { chart.destroy(); chart = null; }
+    el.results.classList.add('hidden');
+    el.quiz.classList.add('hidden');
+    el.start.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  });
+
+  /* ============================================================
+     SCORING
+     ============================================================ */
+  function selectedValue(qIndex) {
+    const q = questions[qIndex];
+    return q.options[answers[qIndex]].value;
+  }
+
+  function computePolicyScores() {
+    const raw = {};
+    AXES.forEach(a => { raw[a] = 0; });
+    questions.forEach((q, idx) => {
+      if (q.group === 'policy') raw[q.axis] += selectedValue(idx);
+    });
+    // normalise raw (3-15) -> 1-10
+    const norm = {};
+    AXES.forEach(a => {
+      norm[a] = ((raw[a] - 3) / 12) * 9 + 1;
+    });
+    return norm;
+  }
+
+  function computeThinkingScore() {
+    let raw = 0;
+    questions.forEach((q, idx) => {
+      if (q.group === 'thinking') raw += selectedValue(idx);
+    });
+    // raw 6-30 -> 0-100
+    return ((raw - 6) / 24) * 100;
+  }
+
+  function euclidean(user, party) {
+    let sum = 0;
+    AXES.forEach(a => {
+      const d = user[a] - party[a];
+      sum += d * d;
+    });
+    return Math.sqrt(sum);
+  }
+
+  /* ============================================================
+     PROFILE TEXT
+     ============================================================ */
+  const profileFragments = {
+    Economic: [
+      'You believe the state has a strong responsibility to reduce inequality and ensure nobody is left behind economically.',
+      'You take a pragmatic view on economics — some redistribution, some market freedom.',
+      'You lean toward free market solutions and personal economic responsibility.',
+    ],
+    Social: [
+      "On personal freedoms, you're strongly libertarian — the state should stay out of how people choose to live.",
+      'You balance personal freedom with the need for some social guardrails.',
+      'You believe a well-ordered society sometimes requires restrictions on individual behaviour.',
+    ],
+    Environmental: [
+      'Environmental protection and climate action are non-negotiable priorities for you.',
+      'You support environmental action but weigh it against economic realities.',
+      'You prioritise economic growth and are sceptical of aggressive green policy.',
+    ],
+    Institutional: [
+      'You want key institutions depoliticised and run by independent experts insulated from electoral cycles.',
+      'You see merit in both independent expertise and democratic accountability in how services are run.',
+      'You believe elected governments should maintain direct control over public services.',
+    ],
+    Global: [
+      "Britain's role in the world matters to you — you support international engagement, aid, and multilateralism.",
+      'You balance international responsibility with a focus on domestic priorities.',
+      'You think Britain should put its own citizens first before engaging internationally.',
+    ],
+    Justice: [
+      'On crime and justice, you prioritise rehabilitation and addressing root causes over punishment.',
+      'You believe both rehabilitation and appropriate consequences have a role in the justice system.',
+      'You believe punishment proportionate to the crime is the priority of the justice system.',
+    ],
+  };
+
+  function fragmentFor(axis, score) {
+    let band;
+    if (score < 3.5) band = 0;
+    else if (score <= 6.5) band = 1;
+    else band = 2;
+    return profileFragments[axis][band];
+  }
+
+  function buildProfile(scores) {
+    return AXES.map(a => fragmentFor(a, scores[a])).join(' ');
+  }
+
+  function thinkingZone(score) {
+    if (score <= 20) return 'Strongly Dogmatic';
+    if (score <= 40) return 'Leaning Dogmatic';
+    if (score <= 60) return 'Balanced';
+    if (score <= 80) return 'Leaning Empirical';
+    return 'Strongly Empirical';
+  }
+
+  /* ============================================================
+     RESULTS
+     ============================================================ */
+  function showResults() {
+    const userScores = computePolicyScores();
+    const thinking = computeThinkingScore();
+
+    // closest / furthest
+    let closest = null, furthest = null;
+    let minD = Infinity, maxD = -Infinity;
+    Object.keys(partyScores).forEach(key => {
+      const d = euclidean(userScores, partyScores[key]);
+      if (d < minD) { minD = d; closest = key; }
+      if (d > maxD) { maxD = d; furthest = key; }
+    });
+    document.getElementById('closest-party').textContent = partyMeta[closest].name;
+    document.getElementById('furthest-party').textContent = partyMeta[furthest].name;
+
+    // profile
+    document.getElementById('profile-text').textContent = buildProfile(userScores);
+
+    // swap screens
+    el.quiz.classList.add('hidden');
+    el.results.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'auto' });
+
+    // build toggles + chart
+    buildToggles();
+    buildChart(userScores);
+
+    // gauge — animate after paint
+    document.getElementById('gauge-zone').textContent = thinkingZone(thinking);
+    const fill = document.getElementById('gauge-fill');
+    fill.style.width = '0%';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        fill.style.width = Math.max(0, Math.min(100, thinking)) + '%';
+      });
+    });
+  }
+
+  function buildToggles() {
+    const row = document.getElementById('toggle-row');
+    row.innerHTML = '';
+    Object.keys(partyMeta).forEach(key => {
+      const meta = partyMeta[key];
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'toggle' + (partyVisible[key] ? '' : ' off');
+      btn.style.setProperty('--toggle-color', meta.color);
+      const dot = document.createElement('span');
+      dot.className = 'dot';
+      const label = document.createElement('span');
+      label.textContent = meta.name;
+      btn.appendChild(dot);
+      btn.appendChild(label);
+      btn.addEventListener('click', () => {
+        partyVisible[key] = !partyVisible[key];
+        btn.classList.toggle('off', !partyVisible[key]);
+        updateChartVisibility();
+      });
+      row.appendChild(btn);
+    });
+  }
+
+  function poleLabel(axis) {
+    // multiline array: axis name on top, poles below
+    return [axis, axisPoles[axis][0] + ' ← → ' + axisPoles[axis][1]];
+  }
+
+  function buildChart(userScores) {
+    const ctx = document.getElementById('radar').getContext('2d');
+    const labels = AXES.map(poleLabel);
+
+    const datasets = [];
+    // user dataset first
+    datasets.push({
+      label: 'You',
+      data: AXES.map(a => userScores[a]),
+      borderColor: ACCENT,
+      backgroundColor: 'rgba(255, 226, 52, 0.22)',
+      borderWidth: 2.5,
+      pointBackgroundColor: ACCENT,
+      pointBorderColor: ACCENT,
+      pointRadius: 3.5,
+      fill: true,
+      order: 0,
+      _key: 'you',
+    });
+
+    Object.keys(partyMeta).forEach(key => {
+      const meta = partyMeta[key];
+      datasets.push({
+        label: meta.name,
+        data: AXES.map(a => partyScores[key][a]),
+        borderColor: meta.color,
+        backgroundColor: 'transparent',
+        borderWidth: 1.5,
+        pointBackgroundColor: meta.color,
+        pointBorderColor: meta.color,
+        pointRadius: 2,
+        fill: false,
+        order: 1,
+        hidden: !partyVisible[key],
+        _key: key,
+      });
+    });
+
+    const gridColor = 'rgba(255,255,255,0.08)';
+    const tickColor = '#9A9590';
+
+    chart = new Chart(ctx, {
+      type: 'radar',
+      data: { labels: labels, datasets: datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 600 },
+        layout: { padding: 4 },
+        scales: {
+          r: {
+            min: 0,
+            max: 10,
+            ticks: {
+              stepSize: 2,
+              color: tickColor,
+              backdropColor: 'transparent',
+              font: { family: "'DM Sans', sans-serif", size: 10 },
+            },
+            grid: { color: gridColor },
+            angleLines: { color: gridColor },
+            pointLabels: {
+              color: '#F5F0E8',
+              font: { family: "'DM Sans', sans-serif", size: 11, weight: '500' },
+              callback: function (label) { return label; },
+            },
+          },
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#242424',
+            borderColor: '#404040',
+            borderWidth: 1,
+            titleColor: '#F5F0E8',
+            bodyColor: '#F5F0E8',
+            titleFont: { family: "'DM Sans', sans-serif" },
+            bodyFont: { family: "'DM Sans', sans-serif" },
+            callbacks: {
+              title: function (items) {
+                if (!items.length) return '';
+                return AXES[items[0].dataIndex];
+              },
+              label: function (item) {
+                return item.dataset.label + ': ' + item.formattedValue;
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  function updateChartVisibility() {
+    if (!chart) return;
+    chart.data.datasets.forEach(ds => {
+      if (ds._key && ds._key !== 'you') {
+        ds.hidden = !partyVisible[ds._key];
+      }
+    });
+    chart.update();
+  }
+
+})();
+</script>
+
+</body>
+</html>
