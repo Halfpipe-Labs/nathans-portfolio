@@ -22,6 +22,7 @@ const Nav = ({ activeSection }) => {
     { href: '#pillars', label: 'Work' },
     { href: '#about', label: 'About' },
     { href: '#writing', label: 'Writing' },
+    { href: '#featured', label: 'Press' },
     { href: '#links', label: 'Links' },
   ];
 
